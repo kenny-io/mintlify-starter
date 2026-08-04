@@ -1,10 +1,10 @@
 ---
-title: "REST API Endpoints for Resources"
+title: "Resources API: List, Create, Update, and Delete Resources"
 sidebarTitle: "Resources"
-description: "CRUD endpoints for managing resources in Google. List, create, retrieve, update, and delete resources via the REST API."
+description: "Full CRUD API reference for Google resources. List, create, retrieve, update, and delete resources with request parameters and code examples."
 ---
 
-Resources are the core building blocks of your projects in Google. Use these endpoints to programmatically list, create, retrieve, update, and delete resources in any project your API key has access to. All requests must include a valid `Authorization` header, and all responses are returned as JSON.
+Resources are the core building blocks of your projects in Google. Use these endpoints to programmatically list, create, retrieve, update, and delete resources in any project your API key has access to. All requests must include a valid `Authorization` header — see the [Authentication](/api/authentication) guide if you need to create or manage API keys.
 
 ## GET /v1/resources
 
@@ -85,7 +85,7 @@ Retrieve a paginated list of resources across your workspace. Filter by status o
 ```bash curl
 curl -X GET "https://api.google.com/v1/resources?status=active&project_id=proj_9k2mXp&page=1&per_page=20" \
   -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json"
+  -H "Accept: application/json"
 ```
 
 ```javascript JavaScript
@@ -95,7 +95,7 @@ const response = await fetch(
     method: "GET",
     headers: {
       Authorization: "Bearer YOUR_API_KEY",
-      "Content-Type": "application/json",
+      Accept: "application/json",
     },
   }
 );
@@ -147,7 +147,8 @@ data = response.json()
     "page": 1,
     "per_page": 20,
     "total_pages": 3
-  }
+  },
+  "error": null
 }
 ```
 
@@ -185,40 +186,37 @@ Create a new resource inside a project. You must supply at minimum a `name` and 
 
 **Response**
 
-<ResponseField name="id" type="string">
-  The unique identifier for the newly created resource.
-</ResponseField>
-
-<ResponseField name="name" type="string">
-  The display name of the resource.
-</ResponseField>
-
-<ResponseField name="description" type="string">
-  The description provided at creation.
-</ResponseField>
-
-<ResponseField name="project_id" type="string">
-  The ID of the project the resource belongs to.
-</ResponseField>
-
-<ResponseField name="status" type="string">
-  The status of the resource at creation time.
-</ResponseField>
-
-<ResponseField name="assignee_id" type="string">
-  The ID of the assigned workspace member, if provided.
-</ResponseField>
-
-<ResponseField name="due_date" type="string">
-  The due date in ISO 8601 format, if provided.
-</ResponseField>
-
-<ResponseField name="created_at" type="string">
-  The UTC timestamp when the resource was created.
-</ResponseField>
-
-<ResponseField name="updated_at" type="string">
-  The UTC timestamp when the resource was last updated.
+<ResponseField name="data" type="object">
+  The newly created resource object.
+  <Expandable title="Resource object">
+    <ResponseField name="id" type="string">
+      The unique identifier for the newly created resource.
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      The display name of the resource.
+    </ResponseField>
+    <ResponseField name="description" type="string">
+      The description provided at creation.
+    </ResponseField>
+    <ResponseField name="project_id" type="string">
+      The ID of the project the resource belongs to.
+    </ResponseField>
+    <ResponseField name="status" type="string">
+      The status of the resource at creation time.
+    </ResponseField>
+    <ResponseField name="assignee_id" type="string">
+      The ID of the assigned workspace member, if provided.
+    </ResponseField>
+    <ResponseField name="due_date" type="string">
+      The due date in ISO 8601 format, if provided.
+    </ResponseField>
+    <ResponseField name="created_at" type="string">
+      The UTC timestamp when the resource was created.
+    </ResponseField>
+    <ResponseField name="updated_at" type="string">
+      The UTC timestamp when the resource was last updated.
+    </ResponseField>
+  </Expandable>
 </ResponseField>
 
 <CodeGroup>
@@ -280,15 +278,19 @@ data = response.json()
 
 ```json
 {
-  "id": "res_8hY5pMnR",
-  "name": "Brand Style Guide",
-  "description": "Official brand guidelines including colors, fonts, and usage rules.",
-  "project_id": "proj_9k2mXp",
-  "status": "active",
-  "assignee_id": "usr_3bR8vKnP",
-  "due_date": "2024-10-01",
-  "created_at": "2024-08-05T09:12:44Z",
-  "updated_at": "2024-08-05T09:12:44Z"
+  "data": {
+    "id": "res_8hY5pMnR",
+    "name": "Brand Style Guide",
+    "description": "Official brand guidelines including colors, fonts, and usage rules.",
+    "project_id": "proj_9k2mXp",
+    "status": "active",
+    "assignee_id": "usr_3bR8vKnP",
+    "due_date": "2024-10-01",
+    "created_at": "2024-08-05T09:12:44Z",
+    "updated_at": "2024-08-05T09:12:44Z"
+  },
+  "meta": null,
+  "error": null
 }
 ```
 
@@ -306,47 +308,44 @@ Retrieve a single resource by its unique ID. Returns the full resource object in
 
 **Response**
 
-<ResponseField name="id" type="string">
-  The unique identifier for the resource.
-</ResponseField>
-
-<ResponseField name="name" type="string">
-  The display name of the resource.
-</ResponseField>
-
-<ResponseField name="description" type="string">
-  The description of the resource.
-</ResponseField>
-
-<ResponseField name="project_id" type="string">
-  The ID of the project this resource belongs to.
-</ResponseField>
-
-<ResponseField name="status" type="string">
-  The current status: `active`, `archived`, `draft`, or `completed`.
-</ResponseField>
-
-<ResponseField name="assignee_id" type="string">
-  The ID of the assigned workspace member.
-</ResponseField>
-
-<ResponseField name="due_date" type="string">
-  The due date in ISO 8601 format.
-</ResponseField>
-
-<ResponseField name="created_at" type="string">
-  The UTC timestamp when the resource was created.
-</ResponseField>
-
-<ResponseField name="updated_at" type="string">
-  The UTC timestamp when the resource was last updated.
+<ResponseField name="data" type="object">
+  The full resource object.
+  <Expandable title="Resource object">
+    <ResponseField name="id" type="string">
+      The unique identifier for the resource.
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      The display name of the resource.
+    </ResponseField>
+    <ResponseField name="description" type="string">
+      The description of the resource.
+    </ResponseField>
+    <ResponseField name="project_id" type="string">
+      The ID of the project this resource belongs to.
+    </ResponseField>
+    <ResponseField name="status" type="string">
+      The current status: `active`, `archived`, `draft`, or `completed`.
+    </ResponseField>
+    <ResponseField name="assignee_id" type="string">
+      The ID of the assigned workspace member.
+    </ResponseField>
+    <ResponseField name="due_date" type="string">
+      The due date in ISO 8601 format.
+    </ResponseField>
+    <ResponseField name="created_at" type="string">
+      The UTC timestamp when the resource was created.
+    </ResponseField>
+    <ResponseField name="updated_at" type="string">
+      The UTC timestamp when the resource was last updated.
+    </ResponseField>
+  </Expandable>
 </ResponseField>
 
 <CodeGroup>
 ```bash curl
 curl -X GET "https://api.google.com/v1/resources/res_8hY5pMnR" \
   -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json"
+  -H "Accept: application/json"
 ```
 
 ```javascript JavaScript
@@ -356,7 +355,7 @@ const response = await fetch(
     method: "GET",
     headers: {
       Authorization: "Bearer YOUR_API_KEY",
-      "Content-Type": "application/json",
+      Accept: "application/json",
     },
   }
 );
@@ -373,6 +372,26 @@ response = requests.get(
 data = response.json()
 ```
 </CodeGroup>
+
+**Sample Response**
+
+```json
+{
+  "data": {
+    "id": "res_8hY5pMnR",
+    "name": "Brand Style Guide",
+    "description": "Official brand guidelines including colors, fonts, and usage rules.",
+    "project_id": "proj_9k2mXp",
+    "status": "active",
+    "assignee_id": "usr_3bR8vKnP",
+    "due_date": "2024-10-01",
+    "created_at": "2024-08-05T09:12:44Z",
+    "updated_at": "2024-08-05T09:12:44Z"
+  },
+  "meta": null,
+  "error": null
+}
+```
 
 ---
 
@@ -414,40 +433,37 @@ Update an existing resource. Supply only the fields you want to change — all b
 
 **Response**
 
-<ResponseField name="id" type="string">
-  The unique identifier for the resource.
-</ResponseField>
-
-<ResponseField name="name" type="string">
-  The updated display name.
-</ResponseField>
-
-<ResponseField name="description" type="string">
-  The updated description.
-</ResponseField>
-
-<ResponseField name="project_id" type="string">
-  The project ID the resource now belongs to.
-</ResponseField>
-
-<ResponseField name="status" type="string">
-  The updated status.
-</ResponseField>
-
-<ResponseField name="assignee_id" type="string">
-  The ID of the currently assigned workspace member.
-</ResponseField>
-
-<ResponseField name="due_date" type="string">
-  The updated due date in ISO 8601 format.
-</ResponseField>
-
-<ResponseField name="created_at" type="string">
-  The UTC timestamp when the resource was originally created.
-</ResponseField>
-
-<ResponseField name="updated_at" type="string">
-  The UTC timestamp reflecting the most recent update.
+<ResponseField name="data" type="object">
+  The full updated resource object.
+  <Expandable title="Resource object">
+    <ResponseField name="id" type="string">
+      The unique identifier for the resource.
+    </ResponseField>
+    <ResponseField name="name" type="string">
+      The updated display name.
+    </ResponseField>
+    <ResponseField name="description" type="string">
+      The updated description.
+    </ResponseField>
+    <ResponseField name="project_id" type="string">
+      The project ID the resource now belongs to.
+    </ResponseField>
+    <ResponseField name="status" type="string">
+      The updated status.
+    </ResponseField>
+    <ResponseField name="assignee_id" type="string">
+      The ID of the currently assigned workspace member.
+    </ResponseField>
+    <ResponseField name="due_date" type="string">
+      The updated due date in ISO 8601 format.
+    </ResponseField>
+    <ResponseField name="created_at" type="string">
+      The UTC timestamp when the resource was originally created.
+    </ResponseField>
+    <ResponseField name="updated_at" type="string">
+      The UTC timestamp reflecting the most recent update.
+    </ResponseField>
+  </Expandable>
 </ResponseField>
 
 <CodeGroup>
@@ -496,6 +512,26 @@ data = response.json()
 ```
 </CodeGroup>
 
+**Sample Response**
+
+```json
+{
+  "data": {
+    "id": "res_8hY5pMnR",
+    "name": "Brand Style Guide",
+    "description": "Official brand guidelines including colors, fonts, and usage rules.",
+    "project_id": "proj_9k2mXp",
+    "status": "completed",
+    "assignee_id": "usr_3bR8vKnP",
+    "due_date": "2024-09-15",
+    "created_at": "2024-08-05T09:12:44Z",
+    "updated_at": "2024-09-15T16:30:00Z"
+  },
+  "meta": null,
+  "error": null
+}
+```
+
 ---
 
 ## DELETE /v1/resources/{id}
@@ -537,3 +573,90 @@ response = requests.delete(
 # 204 No Content — no response body
 ```
 </CodeGroup>
+
+---
+
+## Error Responses
+
+All resources endpoints return standard error envelopes. The most common errors are listed below.
+
+### 401 Unauthorized
+
+The `Authorization` header is missing or the API key is invalid.
+
+```json
+{
+  "data": null,
+  "meta": null,
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "A valid Bearer token is required. Include an Authorization header with your API key.",
+    "status": 401
+  }
+}
+```
+
+### 403 Forbidden
+
+The API key does not have the `write` scope required for this operation.
+
+```json
+{
+  "data": null,
+  "meta": null,
+  "error": {
+    "code": "FORBIDDEN",
+    "message": "This action requires the 'write' scope. The provided API key only has 'read' access.",
+    "status": 403
+  }
+}
+```
+
+### 404 Not Found
+
+No resource exists with the provided ID in your workspace.
+
+```json
+{
+  "data": null,
+  "meta": null,
+  "error": {
+    "code": "RESOURCE_NOT_FOUND",
+    "message": "No resource with that ID exists in your workspace.",
+    "status": 404
+  }
+}
+```
+
+### 429 Too Many Requests
+
+You have exceeded your plan's rate limit. Check the `Retry-After` header and wait before retrying. See the [Rate Limits](/api/rate-limits) guide for details.
+
+```json
+{
+  "data": null,
+  "meta": null,
+  "error": {
+    "code": "RATE_LIMIT_EXCEEDED",
+    "message": "You have exceeded the rate limit for your plan. Retry after 38 seconds.",
+    "status": 429,
+    "retry_after": 38
+  }
+}
+```
+
+### 500 Internal Server Error
+
+An unexpected error occurred on Google's side. Retry with exponential backoff and contact support if the issue persists.
+
+```json
+{
+  "data": null,
+  "meta": null,
+  "error": {
+    "code": "INTERNAL_SERVER_ERROR",
+    "message": "An unexpected error occurred. Please try again or contact support.",
+    "status": 500
+  }
+}
+```

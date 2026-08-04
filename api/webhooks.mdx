@@ -40,24 +40,25 @@ Register a new webhook endpoint. Provide the URL Google should send event payloa
 
 **Response**
 
-<ResponseField name="id" type="string">
-  The unique identifier for the registered webhook.
-</ResponseField>
-
-<ResponseField name="url" type="string">
-  The endpoint URL Google delivers events to.
-</ResponseField>
-
-<ResponseField name="events" type="array">
-  The list of event names this webhook is subscribed to.
-</ResponseField>
-
-<ResponseField name="status" type="string">
-  The current status of the webhook. Returns `active` on successful registration.
-</ResponseField>
-
-<ResponseField name="created_at" type="string">
-  The UTC timestamp when the webhook was registered.
+<ResponseField name="data" type="object">
+  The newly registered webhook object.
+  <Expandable title="Webhook object">
+    <ResponseField name="id" type="string">
+      The unique identifier for the registered webhook.
+    </ResponseField>
+    <ResponseField name="url" type="string">
+      The endpoint URL Google delivers events to.
+    </ResponseField>
+    <ResponseField name="events" type="array">
+      The list of event names this webhook is subscribed to.
+    </ResponseField>
+    <ResponseField name="status" type="string">
+      The current status of the webhook. Returns `active` on successful registration.
+    </ResponseField>
+    <ResponseField name="created_at" type="string">
+      The UTC timestamp when the webhook was registered.
+    </ResponseField>
+  </Expandable>
 </ResponseField>
 
 <CodeGroup>
@@ -110,11 +111,15 @@ data = response.json()
 
 ```json
 {
-  "id": "wh_7nF3kBpX",
-  "url": "https://yourapp.example.com/webhooks/google",
-  "events": ["resource.created", "resource.updated", "user.invited"],
-  "status": "active",
-  "created_at": "2024-08-05T13:45:00Z"
+  "data": {
+    "id": "wh_7nF3kBpX",
+    "url": "https://yourapp.example.com/webhooks/google",
+    "events": ["resource.created", "resource.updated", "user.invited"],
+    "status": "active",
+    "created_at": "2024-08-05T13:45:00Z"
+  },
+  "meta": null,
+  "error": null
 }
 ```
 
@@ -151,7 +156,7 @@ Retrieve a list of all webhook endpoints currently registered in your workspace.
 ```bash curl
 curl -X GET "https://api.google.com/v1/webhooks" \
   -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json"
+  -H "Accept: application/json"
 ```
 
 ```javascript JavaScript
@@ -159,7 +164,7 @@ const response = await fetch("https://api.google.com/v1/webhooks", {
   method: "GET",
   headers: {
     Authorization: "Bearer YOUR_API_KEY",
-    "Content-Type": "application/json",
+    Accept: "application/json",
   },
 });
 const data = await response.json();
@@ -195,7 +200,13 @@ data = response.json()
       "status": "active",
       "created_at": "2024-07-22T09:10:00Z"
     }
-  ]
+  ],
+  "meta": {
+    "page": 1,
+    "per_page": 20,
+    "total": 2
+  },
+  "error": null
 }
 ```
 
@@ -384,6 +395,93 @@ def handle_webhook():
     return jsonify({"received": True}), 200
 ```
 </CodeGroup>
+
+---
+
+## Error Responses
+
+All webhooks endpoints return standard error envelopes. The most common errors are listed below.
+
+### 401 Unauthorized
+
+The `Authorization` header is missing or the API key is invalid.
+
+```json
+{
+  "data": null,
+  "meta": null,
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "A valid Bearer token is required. Include an Authorization header with your API key.",
+    "status": 401
+  }
+}
+```
+
+### 403 Forbidden
+
+The API key does not have the `write` scope required for this operation.
+
+```json
+{
+  "data": null,
+  "meta": null,
+  "error": {
+    "code": "FORBIDDEN",
+    "message": "This action requires the 'write' scope. The provided API key only has 'read' access.",
+    "status": 403
+  }
+}
+```
+
+### 404 Not Found
+
+No webhook exists with the provided ID in your workspace.
+
+```json
+{
+  "data": null,
+  "meta": null,
+  "error": {
+    "code": "WEBHOOK_NOT_FOUND",
+    "message": "No webhook with that ID exists in your workspace.",
+    "status": 404
+  }
+}
+```
+
+### 429 Too Many Requests
+
+You have exceeded your plan's rate limit. Check the `Retry-After` header and wait before retrying. See the [Rate Limits](/api/rate-limits) guide for details.
+
+```json
+{
+  "data": null,
+  "meta": null,
+  "error": {
+    "code": "RATE_LIMIT_EXCEEDED",
+    "message": "You have exceeded the rate limit for your plan. Retry after 38 seconds.",
+    "status": 429,
+    "retry_after": 38
+  }
+}
+```
+
+### 500 Internal Server Error
+
+An unexpected error occurred on Google's side. Retry with exponential backoff and contact support if the issue persists.
+
+```json
+{
+  "data": null,
+  "meta": null,
+  "error": {
+    "code": "INTERNAL_SERVER_ERROR",
+    "message": "An unexpected error occurred. Please try again or contact support.",
+    "status": 500
+  }
+}
+```
 
 ---
 

@@ -1,7 +1,7 @@
 ---
-title: "Authenticate with the Google API Using API Keys"
+title: "Authenticate with the Google REST API Using API Keys"
 sidebarTitle: "Authentication"
-description: "Generate and manage API keys to authenticate your requests to the Google REST API. Learn how to pass your key and handle auth errors."
+description: "Generate and manage API keys to authenticate your requests to the Google REST API. Learn how to pass your key, rotate credentials, and handle auth errors."
 ---
 
 Every request you make to the Google REST API must be authenticated. Google uses bearer token authentication — you generate an API key in your account settings and include it in the `Authorization` header of each request. This page explains how to create keys, use them in your code, rotate or revoke them when needed, and handle the authentication errors you may encounter along the way.
@@ -38,7 +38,7 @@ API keys are scoped to your user account and inherit the permissions of your wor
 
 Pass your API key in the `Authorization` header as a bearer token on every request. The header value must follow this exact format:
 
-```
+```http
 Authorization: Bearer YOUR_API_KEY
 ```
 

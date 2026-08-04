@@ -1,5 +1,5 @@
 ---
-title: "API Rate Limits and Throttling in Google"
+title: "API Rate Limits, Throttling, and Backoff Strategies"
 sidebarTitle: "Rate Limits"
 description: "Understand Google's API rate limits by plan, how to read rate-limit response headers, and best practices for handling 429 errors gracefully."
 ---
@@ -80,6 +80,24 @@ Retry-After: 38
 
 Always check the `Retry-After` value (also available in `error.retry_after`) before re-attempting the request — retrying immediately will only produce another `429` and waste your quota once the window resets.
 
+## Other Error Responses
+
+### 500 Internal Server Error
+
+If the API returns a `500`, the error is on Google's side. Wait a moment and retry with backoff. Unlike `429` errors, `500` responses do not include a `Retry-After` header, so use exponential backoff starting at a short initial delay.
+
+```json
+{
+  "data": null,
+  "meta": null,
+  "error": {
+    "code": "INTERNAL_SERVER_ERROR",
+    "message": "An unexpected error occurred. Please try again or contact support.",
+    "status": 500
+  }
+}
+```
+
 ## Handling 429 Errors: Best Practices
 
 ### 1. Use exponential backoff with jitter
@@ -133,7 +151,7 @@ async function fetchWithBackoff(url, options = {}, maxRetries = 5) {
 
 // Usage
 const response = await fetchWithBackoff(
-  "https://api.google.com/v1/projects",
+  "https://api.google.com/v1/resources",
   {
     headers: {
       Authorization: `Bearer ${process.env.GOOGLE_API_KEY}`,
@@ -147,26 +165,24 @@ const payload = await response.json();
 
 ### 2. Cache responses where possible
 
-Many read operations — fetching workspace configuration, user lists, or static project metadata — don't require a fresh API call on every action. Cache responses locally and only re-fetch when the data is likely to have changed or after a reasonable TTL (e.g., 60 seconds for lists, 5 minutes for configuration).
+Many read operations — fetching workspace configuration, user lists, or static resource metadata — don't require a fresh API call on every action. Cache responses locally and only re-fetch when the data is likely to have changed or after a reasonable TTL (e.g., 60 seconds for lists, 5 minutes for configuration).
 
 <Tip>
-  Store the `updated_at` timestamp from list responses. Before re-fetching a resource, compare its cached `updated_at` against a lightweight `HEAD` or conditional `GET` request to skip the full fetch when nothing has changed.
+  Store the `updated_at` timestamp from list responses. Before re-fetching a resource, compare its cached `updated_at` against a lightweight conditional `GET` request to skip the full fetch when nothing has changed.
 </Tip>
 
-### 3. Batch requests instead of looping
+### 3. Fetch pages at maximum size
 
-If you need to operate on many resources, avoid issuing one request per item in a tight loop. Use bulk endpoints where available (e.g., `POST /v1/tasks/batch`) and fetch pages at the maximum `per_page=100` to minimize total request count.
+If you need to retrieve many resources, use the maximum `per_page=100` value to minimize the total number of requests required to page through your data.
 
 ```bash
-# Inefficient — one request per task ID
-for id in task_001 task_002 task_003; do
-  curl "https://api.google.com/v1/tasks/$id" \
-    -H "Authorization: Bearer $GOOGLE_API_KEY"
-done
+# Inefficient — fetches only 20 resources per request (default)
+curl "https://api.google.com/v1/resources" \
+  -H "Authorization: Bearer YOUR_API_KEY"
 
-# Efficient — fetch up to 100 tasks in a single request
-curl "https://api.google.com/v1/tasks?per_page=100" \
-  -H "Authorization: Bearer $GOOGLE_API_KEY"
+# Efficient — fetches up to 100 resources in a single request
+curl "https://api.google.com/v1/resources?per_page=100" \
+  -H "Authorization: Bearer YOUR_API_KEY"
 ```
 
 ### 4. Monitor `X-RateLimit-Remaining` proactively
@@ -207,7 +223,7 @@ function checkRateLimitHeaders(response) {
   <Card title="Use exponential backoff" icon="arrow-up-right-dots">
     Add jitter to retry delays to prevent synchronized retry storms from multiple clients.
   </Card>
-  <Card title="Batch and cache" icon="layer-group">
+  <Card title="Maximize page size" icon="layer-group">
     Reduce total request volume by fetching in bulk with `per_page=100` and caching stable read responses.
   </Card>
 </CardGroup>

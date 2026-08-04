@@ -1,5 +1,5 @@
 ---
-title: "API Authentication: Bearer Tokens and API Keys"
+title: "API Authentication: Bearer Tokens and API Keys Guide"
 sidebarTitle: "Authentication"
 description: "Authenticate Google API requests using Bearer token authentication. Learn how to generate, use, rotate, and revoke API keys programmatically."
 ---
@@ -10,7 +10,7 @@ Every request to the Google API must be authenticated. Google uses the **Bearer 
 
 Include your API key as a Bearer token in the `Authorization` header of every HTTP request:
 
-```
+```http
 Authorization: Bearer YOUR_API_KEY
 ```
 
@@ -77,27 +77,27 @@ Each API key is issued with one or more scopes that restrict what the key can do
 
 | Scope | Access granted |
 |---|---|
-| `read` | `GET` requests on all resources (projects, tasks, workflows, users) |
-| `write` | `POST`, `PUT`, `PATCH`, and `DELETE` requests on all resources |
+| `read` | `GET` requests on all resources (resources, users, webhooks) |
+| `write` | `POST`, `PUT`, and `DELETE` requests on all resources |
 | `admin` | All `read` and `write` permissions, plus key management (`/v1/api-keys`) |
 
 A key with only `read` scope cannot create or modify resources. Attempting a write with a `read`-only key returns a `403 Forbidden` response.
 
 ## Making Authenticated Requests
 
-The following examples show how to call `GET /v1/projects` with your API key in three common environments.
+The following examples show how to call `GET /v1/resources` with your API key in three common environments.
 
 <CodeGroup>
 
 ```bash cURL
 curl --request GET \
-  --url "https://api.google.com/v1/projects" \
-  --header "Authorization: Bearer ggl_sk_v1_4Kx9mZpQrT2uYwNsJdLhBvCeOaFiGn7R" \
+  --url "https://api.google.com/v1/resources" \
+  --header "Authorization: Bearer YOUR_API_KEY" \
   --header "Accept: application/json"
 ```
 
 ```javascript JavaScript (fetch)
-const response = await fetch("https://api.google.com/v1/projects", {
+const response = await fetch("https://api.google.com/v1/resources", {
   method: "GET",
   headers: {
     "Authorization": `Bearer ${process.env.GOOGLE_API_KEY}`,
@@ -111,7 +111,7 @@ if (!response.ok) {
 }
 
 const { data, meta } = await response.json();
-console.log(`Fetched ${data.length} of ${meta.total} projects`);
+console.log(`Fetched ${data.length} of ${meta.total} resources`);
 ```
 
 ```python Python (requests)
@@ -121,7 +121,7 @@ import requests
 api_key = os.environ["GOOGLE_API_KEY"]
 
 response = requests.get(
-    "https://api.google.com/v1/projects",
+    "https://api.google.com/v1/resources",
     headers={
         "Authorization": f"Bearer {api_key}",
         "Accept": "application/json",
@@ -130,7 +130,7 @@ response = requests.get(
 
 response.raise_for_status()
 payload = response.json()
-print(f"Fetched {len(payload['data'])} of {payload['meta']['total']} projects")
+print(f"Fetched {len(payload['data'])} of {payload['meta']['total']} resources")
 ```
 
 </CodeGroup>
@@ -167,6 +167,22 @@ Returned when the token is valid but does not have the scope required by the end
     "code": "FORBIDDEN",
     "message": "This action requires the 'write' scope. The provided API key only has 'read' access.",
     "status": 403
+  }
+}
+```
+
+### 500 Internal Server Error
+
+Returned when an unexpected error occurs on Google's side. If you receive a `500` consistently, check the [Google status page](https://status.google.com) and contact support if the issue persists.
+
+```json
+{
+  "data": null,
+  "meta": null,
+  "error": {
+    "code": "INTERNAL_SERVER_ERROR",
+    "message": "An unexpected error occurred. Please try again or contact support.",
+    "status": 500
   }
 }
 ```
