@@ -1,0 +1,84 @@
+---
+title: "Roles and Permissions in Google Workspaces"
+sidebarTitle: "Permissions"
+description: "Learn how Google's role-based access control works. Understand what Admins, Members, and Viewers can do across your workspace."
+---
+
+Google uses role-based access control (RBAC) to determine what each person in your workspace can see and do. Every member is assigned exactly one workspace-level role when they join, and that role governs their default permissions across all projects. You can further refine access by assigning project-level roles that override the workspace defaults for a specific project. This layered model gives you precise control without requiring complex per-user configuration.
+
+## Workspace Roles
+
+Google defines four workspace-level roles, each designed for a different level of trust and responsibility.
+
+<CardGroup cols={2}>
+  <Card title="Owner" icon="crown">
+    The Owner has unrestricted access to every feature, setting, and resource in the workspace. There is exactly one Owner per workspace. Ownership can be transferred but not shared.
+  </Card>
+  <Card title="Admin" icon="shield-halved">
+    Admins can manage members, billing, integrations, and workspace settings. They have full read and write access to all projects and tasks, including private ones.
+  </Card>
+  <Card title="Member" icon="user">
+    Members are the default role for most of your team. They can create and manage projects and tasks, collaborate on work, and use integrations — but cannot access billing or workspace-level settings.
+  </Card>
+  <Card title="Viewer" icon="eye">
+    Viewers have read-only access to the projects they are explicitly added to. They cannot create, edit, or delete any content. This role is ideal for stakeholders who need visibility without edit access.
+  </Card>
+</CardGroup>
+
+## Permissions Matrix
+
+The table below shows which actions each role can perform at the workspace level. A ✅ means the role can perform the action. A ❌ means the action is blocked.
+
+| Action | Owner | Admin | Member | Viewer |
+|---|:---:|:---:|:---:|:---:|
+| Manage billing & subscription | ✅ | ✅ | ❌ | ❌ |
+| Invite & remove members | ✅ | ✅ | ❌ | ❌ |
+| Change member roles | ✅ | ✅ | ❌ | ❌ |
+| Manage workspace integrations | ✅ | ✅ | ❌ | ❌ |
+| Edit workspace settings | ✅ | ✅ | ❌ | ❌ |
+| Create projects | ✅ | ✅ | ✅ | ❌ |
+| Archive or delete projects | ✅ | ✅ | ✅ (own) | ❌ |
+| Create & edit tasks | ✅ | ✅ | ✅ | ❌ |
+| Assign tasks to members | ✅ | ✅ | ✅ | ❌ |
+| Comment on tasks | ✅ | ✅ | ✅ | ❌ |
+| View tasks & projects | ✅ | ✅ | ✅ | ✅ |
+| Export project data | ✅ | ✅ | ✅ | ❌ |
+| Create automation rules | ✅ | ✅ | ✅ | ❌ |
+| Delete workspace | ✅ | ❌ | ❌ | ❌ |
+
+<Note>
+  Only the Owner and Admins can change a member's workspace role. To change a role, go to **Workspace Settings → Members**, find the member, and select a new role from the dropdown. Role changes take effect immediately — the affected member does not need to log out and back in. If you demote an Admin who owns projects, they retain project ownership but lose workspace-level Admin privileges.
+</Note>
+
+## Project-Level Role Overrides
+
+In addition to workspace roles, you can assign project-specific roles that apply only within a given project. Project-level roles follow the same four-tier structure (Owner, Admin, Member, Viewer) and override the workspace role downward — but never upward.
+
+For example, a workspace Member can be given a project-level Admin role on a specific project, granting them additional powers within that project while keeping their workspace-level access unchanged. A workspace Admin cannot be restricted to Viewer on a project — their workspace role always takes precedence.
+
+<Accordion title="How private project visibility interacts with roles">
+  When a project is set to **Private** visibility, only members explicitly added to that project can see it — regardless of their workspace role. The exception is workspace Admins and the Owner, who can always see and access private projects. To add someone to a private project, go to **Project Settings → Members** and send them an invitation.
+</Accordion>
+
+## Managing Access for External Stakeholders
+
+<Tip>
+  Use the Viewer role when you need to give clients, contractors, or executive sponsors visibility into a project without risking accidental edits. Viewers can browse tasks, read comments, and download attachments — but every write action is disabled for them. Pair the Viewer role with Private project visibility so they only see the projects you explicitly share.
+</Tip>
+
+## Security Recommendations
+
+<Steps>
+  <Step title="Assign the minimum necessary role">
+    Start every new member as a **Member** and promote to **Admin** only when their responsibilities genuinely require it. Limiting the number of Admins reduces the blast radius of compromised accounts.
+  </Step>
+  <Step title="Audit your member list regularly">
+    Review your member roster quarterly. Remove or downgrade people who have left your organization or changed roles. Go to **Workspace Settings → Members** to see a full list with last-active timestamps.
+  </Step>
+  <Step title="Use private projects for sensitive work">
+    Set high-sensitivity projects to **Private** visibility and invite only the people who need access. This applies even to trusted Members — the principle of least privilege applies to project access as well.
+  </Step>
+  <Step title="Monitor Admin actions via the audit log">
+    Enterprise workspaces have access to a full audit log that records every admin action — invitations, role changes, deletions, and integration changes. Review the log in **Workspace Settings → Audit Log** to detect unexpected activity.
+  </Step>
+</Steps>

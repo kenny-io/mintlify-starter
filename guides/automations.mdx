@@ -1,0 +1,129 @@
+---
+title: "Automate Workflows with Google Automation Rules"
+sidebarTitle: "Automations"
+description: "Build trigger-based automation rules in Google to move tasks, send notifications, and update statuses without manual effort."
+---
+
+Repetitive, manual updates slow teams down and introduce human error — someone forgets to change a status, a notification never goes out, and tasks sit in limbo. Google Automations let you codify your team's process once and let the platform handle the busywork from that point forward. Define a trigger, add optional conditions to narrow when the rule fires, and pick one or more actions to execute automatically.
+
+## Anatomy of an automation rule
+
+Every automation in Google has three parts:
+
+- **Trigger** — the event that kicks the rule off (e.g., a field change, a date arriving, a task being created)
+- **Condition** *(optional)* — a filter that must be true for the rule to proceed (e.g., only tasks with priority = Urgent, only tasks in a specific list)
+- **Action** — what Google does when the trigger fires and conditions pass (e.g., change a status, send a notification, move a task, assign a member)
+
+You can stack multiple conditions with AND/OR logic, and chain up to five actions per rule, so a single automation can handle complex multi-step responses to one event.
+
+<Note>
+  Automation run limits vary by plan. The **Free** plan allows 100 automation runs per workspace per month. The **Pro** plan allows 5,000 runs per month, and the **Business** plan provides unlimited runs. You can monitor current usage under **Settings → Automations → Usage**. Rules that would exceed the monthly limit are paused and queued until the next billing cycle.
+</Note>
+
+## Create an automation rule
+
+<Steps>
+  <Step title="Open the Automations panel">
+    Navigate to the project where you want to add an automation. Click the **Automate** button in the project toolbar (the lightning bolt icon), then select **+ New Rule** in the panel that slides open on the right. You can also create workspace-wide automations that apply across all projects by going to **Settings → Automations → + New Rule**.
+  </Step>
+
+  <Step title="Choose a trigger">
+    Click **Select a Trigger** and browse the trigger library. Triggers are grouped into four categories:
+
+    | Category | Example triggers |
+    |---|---|
+    | **Task events** | Task created, Task deleted, Assignee changed |
+    | **Field changes** | Status changed, Priority changed, Custom field updated |
+    | **Date & time** | Due date arrives, Due date passes, Scheduled time (daily/weekly) |
+    | **Comments & activity** | Comment added, Attachment uploaded |
+
+    Select the trigger that best matches the moment you want the rule to respond to.
+  </Step>
+
+  <Step title="Add conditions (optional)">
+    Click **+ Add Condition** to narrow when the rule fires. Each condition targets a specific field and compares it using an operator:
+
+    - **Is / Is not** — exact match (e.g., Status is "In Review")
+    - **Contains / Does not contain** — partial text match (e.g., Task name contains "Bug")
+    - **Greater than / Less than** — numeric or date comparison
+    - **Is empty / Is not empty** — presence check on any field
+
+    Chain multiple conditions using the **AND** toggle (all conditions must pass) or **OR** toggle (any condition is sufficient).
+  </Step>
+
+  <Step title="Define one or more actions">
+    Click **+ Add Action** and choose what Google should do. Available actions include:
+
+    - **Change status** — move the task to any status in the project
+    - **Assign member** — set or change the task assignee
+    - **Set due date** — assign a relative date (e.g., *today + 3 days*)
+    - **Move to project** — transfer the task to a different project or list
+    - **Send notification** — push an in-app alert or email to selected members
+    - **Post comment** — add an automated comment to the task timeline
+    - **Create subtask** — generate a new subtask with a specified name and assignee
+    - **Trigger webhook** — send a POST request to an external URL
+
+    Add up to five actions per rule. They execute in order from top to bottom.
+  </Step>
+
+  <Step title="Name and activate the rule">
+    Give your rule a descriptive name in the **Rule Name** field at the top of the panel (e.g., *"Notify assignee when task is marked Done"*). Toggle the **Active** switch to enable it, then click **Save Rule**. The rule begins running immediately on all tasks in the target scope.
+  </Step>
+</Steps>
+
+## Example automation rules
+
+<Accordion title="Notify assignee when a task is marked Done">
+  This rule sends a direct notification to the task's assignee whenever a task reaches the Done status — useful for confirming work is acknowledged and closing the feedback loop.
+
+  - **Trigger:** Status changed
+  - **Condition:** New status is "Done"
+  - **Action 1:** Send notification → Assignee → Message: *"Your task '{task.name}' has been marked as Done."*
+  - **Action 2:** Post comment → *"Completed on {date.today}. Great work!"*
+
+  Enable this rule at the workspace level so it applies across every project automatically.
+</Accordion>
+
+<Accordion title="Move overdue tasks to an Overdue list">
+  Keep your active task list clean by automatically moving tasks that have passed their due date into a dedicated **Overdue** list, where a team lead can triage and reschedule them.
+
+  - **Trigger:** Due date passes
+  - **Condition:** Status is not "Done" AND Status is not "Cancelled"
+  - **Action 1:** Move to list → *Overdue*
+  - **Action 2:** Change status → *Blocked*
+  - **Action 3:** Send notification → Project owner → Message: *"'{task.name}' is overdue. Please reschedule or reassign."*
+
+  Run this rule on a nightly schedule by setting the trigger to **Scheduled → Daily at 9:00 AM**.
+</Accordion>
+
+<Accordion title="Auto-assign incoming tasks based on label">
+  When your team uses labels to categorize work by function (e.g., *design*, *backend*, *qa*), this rule automatically assigns new tasks to the right person so nothing falls through the cracks.
+
+  - **Trigger:** Task created
+  - **Condition:** Task label contains "design"
+  - **Action:** Assign member → *[your design lead's name]*
+
+  Duplicate this rule for each label/assignee combination your team uses. Because conditions stack with OR logic, you can also build one rule with multiple branches using the **OR** condition toggle.
+</Accordion>
+
+<Accordion title="Escalate high-priority tasks that haven't moved in 48 hours">
+  Surface stalled urgent work before it becomes a crisis by detecting when a high-priority task hasn't had any activity in two days and escalating it to the project manager.
+
+  - **Trigger:** Scheduled → Daily at 8:00 AM
+  - **Condition:** Priority is "Urgent" AND Last activity is more than 48 hours ago AND Status is not "Done"
+  - **Action 1:** Assign member → *[project manager]*
+  - **Action 2:** Change priority → *Critical* *(if your workflow uses a Critical tier)*
+  - **Action 3:** Send notification → Project manager → Message: *"ESCALATION: '{task.name}' has had no activity for 48+ hours."*
+
+  This rule works best as a workspace-level automation so it monitors high-priority tasks across all active projects simultaneously.
+</Accordion>
+
+## Tips for building reliable automations
+
+<Tip>
+  Test every new rule by creating a dummy task that matches the trigger and conditions before enabling it on real work. Use the **Rule History** tab (accessible from **Automate → Manage Rules → View History**) to inspect each run — it shows the exact trigger event, which conditions passed or failed, and which actions were executed.
+</Tip>
+
+<Warning>
+  Circular automations — where an action triggers another rule that loops back to the first — can consume your monthly run limit rapidly. Google detects loops of up to three levels deep and halts them automatically, but review your rules carefully when chaining actions that change statuses or move tasks.
+</Warning>

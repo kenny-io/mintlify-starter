@@ -1,0 +1,130 @@
+---
+title: "Customize Your Google Workspace and Projects"
+sidebarTitle: "Customization"
+description: "Personalize your Google workspace with custom fields, labels, project views, and branding to match your team's workflow."
+---
+
+No two teams track work the same way. Google's customization layer lets you reshape the platform around your process instead of forcing your process into rigid defaults. Add the fields your team actually uses, tag work with labels that carry meaning across projects, switch between views that match how you think, and put your brand front and center in the workspace. This guide covers every customization option available today.
+
+## Custom fields
+
+Custom fields extend each task with structured data beyond the built-in fields (status, assignee, due date, priority). Add a field once at the project or workspace level and it appears on every task in scope.
+
+### Available custom field types
+
+| Field type | Best used for | Example |
+|---|---|---|
+| **Text** | Short free-form notes or identifiers | Customer name, Ticket ID |
+| **Number** | Quantities, scores, or estimates | Story points, Budget ($) |
+| **Date** | Secondary deadlines or milestones | Review date, Launch date |
+| **Dropdown** | Fixed-choice categorization | Department, Region, Stage |
+| **Checkbox** | Binary yes/no flags | Needs review, Blocked |
+| **URL** | Links to external resources | Spec doc, Figma file |
+| **Member** | Ownership beyond the primary assignee | Reviewer, Stakeholder |
+| **Formula** | Calculated values from other fields | Days remaining, % complete |
+
+### Add a custom field to a project
+
+<Steps>
+  <Step title="Open project settings">
+    Navigate to the project you want to customize. Click the **Settings** icon (gear) in the project toolbar, then select **Fields** from the left-hand settings menu. You'll see all fields currently enabled for this project, including the built-in defaults.
+  </Step>
+
+  <Step title="Create a new field">
+    Click **+ Add Custom Field**. A dialog opens with a field type selector on the left and configuration options on the right. Choose the field type that matches the data you want to capture (see the table above for guidance).
+  </Step>
+
+  <Step title="Configure the field details">
+    Fill in the field configuration:
+
+    - **Field name** — Enter a concise label that will appear as a column header in list view and a label in task detail panels (e.g., *Story Points* or *Department*).
+    - **Description** *(optional)* — Add a tooltip hint that helps teammates understand what to enter.
+    - **Default value** *(optional)* — Pre-fill the field for every new task. Useful for fields like *Region* that default to one value for most tasks.
+    - **Required** toggle — When on, tasks cannot be marked Done without this field being filled in.
+
+    For **Dropdown** fields, click **+ Add Option** to build your list of choices. Drag options to reorder them. Assign a color to each option so they stand out in list and board views.
+  </Step>
+
+  <Step title="Set field visibility and scope">
+    Under **Visibility**, choose who can see and edit this field:
+
+    - **All members** — visible and editable by everyone in the project
+    - **View only** — members can see the value but only admins can edit it
+    - **Admins only** — hidden from standard members entirely
+
+    To reuse this field across all projects in your workspace, toggle **Add to workspace field library**. Workspace-level fields appear in every project's field selector and stay in sync — updating the field name or options updates it everywhere.
+  </Step>
+
+  <Step title="Save and reorder fields">
+    Click **Save Field**. The new field appears as a column in list view immediately. Drag column headers to reorder fields, or click **Manage Columns** to show, hide, or resize them without deleting the underlying data.
+  </Step>
+</Steps>
+
+## Labels and tags
+
+Labels are free-form, colorful tags you attach to tasks to categorize work that cuts across projects, statuses, and assignees. Unlike statuses (which are project-specific), labels are workspace-wide — the same label means the same thing everywhere.
+
+<Tip>
+  Use labels as your primary cross-project filter. In the **My Work** view and the **Workspace Overview** dashboard, you can filter by label to instantly surface all tasks tagged *Q3 Launch* or *Customer Escalation* regardless of which project they live in. Build a small, agreed-upon label taxonomy with your team (10–20 labels is plenty) and stick to it — too many labels become noise.
+</Tip>
+
+### Manage workspace labels
+
+Go to **Settings → Labels** to create, rename, recolor, and archive labels. Click **+ New Label**, type a name, pick a color, and click **Save**. Labels are available instantly across all projects.
+
+To add a label to a task, open the task, click the **Labels** field in the detail panel, and select one or more labels from the dropdown. You can also apply labels in bulk by selecting multiple tasks in list view and using the **Bulk Edit → Add Label** action.
+
+## Project views
+
+Google renders every task list in multiple view formats. Switch views using the tabs at the top of any project — your view preference is saved per project per user, so each teammate can work in the format that suits them without affecting others.
+
+| View | What it shows | Best for |
+|---|---|---|
+| **List** | Tasks in a linear, spreadsheet-style layout with full field columns | Detailed triage and bulk editing |
+| **Board** | Tasks as cards organized into status columns (Kanban-style) | Sprint management and visual flow |
+| **Calendar** | Tasks plotted on a monthly or weekly calendar by due date | Deadline planning and scheduling |
+| **Gantt / Timeline** | Tasks as bars on a time axis with dependency arrows | Project planning and critical-path analysis |
+| **Table** | Pivot-style view grouped by any field | Reporting and cross-field analysis |
+
+### Configure a view
+
+Click **View Settings** (the sliders icon) in any view to control:
+
+- **Grouping** — group tasks by status, assignee, priority, label, or any custom field
+- **Sorting** — sort by due date, priority, creation date, or any number field
+- **Filters** — narrow the visible tasks by any combination of field values
+- **Subtask display** — show or collapse subtasks inline
+
+Save a configured view as a **named view** by clicking **Save as New View** so you and your team can switch back to it instantly.
+
+## Workspace branding
+
+Apply your organization's visual identity to the Google workspace so it feels like a native part of your tooling rather than a generic SaaS product.
+
+Navigate to **Settings → Branding** and configure the following:
+
+<Steps>
+  <Step title="Upload a workspace logo">
+    Click **Upload Logo** under the **Logo** section. Google accepts PNG, JPG, or SVG files up to 2 MB. The logo appears in the top-left corner of the sidebar, on email notifications sent from the workspace, and on any publicly shared project pages.
+
+    Upload a second **Favicon** (32×32 PNG) to replace the default icon in browser tabs when teammates have Google open.
+  </Step>
+
+  <Step title="Set your primary brand color">
+    Click the color swatch under **Primary Color** and enter a hex code or use the color picker. The primary color tints interactive elements — buttons, active sidebar items, progress bars, and link text — throughout the workspace.
+
+    Google recommends choosing a color with a contrast ratio of at least 4.5:1 against white to keep the interface accessible. The branding panel displays a live contrast score as you adjust.
+  </Step>
+
+  <Step title="Choose a workspace theme">
+    Under **Theme**, select **Light**, **Dark**, or **System** as the default for new members. Individual users can override the theme in their personal **Profile → Appearance** settings — the workspace default only applies until they make a personal choice.
+  </Step>
+
+  <Step title="Customize email notification templates">
+    Click **Email Templates** to edit the header and footer of system-generated emails (task assignments, due date reminders, comment notifications). You can add a custom banner image, adjust the footer text (company name, address, unsubscribe language), and preview the rendered email before saving.
+  </Step>
+</Steps>
+
+<Warning>
+  Branding changes apply to the entire workspace and are visible to all members immediately after saving. Ask your workspace admin to review changes before publishing them, especially if your workspace is used by external clients or stakeholders.
+</Warning>

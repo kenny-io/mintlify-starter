@@ -1,47 +1,112 @@
 ---
-title: "Quickstart"
-description: "Begin with a guide on the fastest path to a successful outcome"
+title: "Get Started with Google in Under 5 Minutes"
+sidebarTitle: "Quickstart"
+description: "Learn how to create your account, set up a project, and make your first API call with Google in just a few minutes."
 ---
 
-Describe how someone begins using your product. What is the first thing they need to do? Are there any prerequisites?
-
-A quickstart should take someone from zero to using your product. They'll get a quick win and a sense of what they can accomplish.
-
-## Prerequisites
-
-Before you begin, you must have:
-
-- Requirement one (for example, Node.js 18+, a free account, an API key)
-- Requirement two (for example, a compatible device, a compatible browser, a compatible operating system)
-
-## Get started
+Welcome to Google — the modern platform that helps teams manage projects, automate workflows, and integrate the tools they already use. This guide walks you through everything from signing up to making your first live API call, so you can see real results in under five minutes.
 
 <Steps>
-  <Step title="Install">
-    Describe how to install your product or sign up.
 
-    ```bash
-    npm install your-package
-    ```
-  </Step>
-  <Step title="Configure">
-    Describe any setup or configuration needed before first use.
+  <Step title="Create Your Account">
+    Navigate to [app.google.com/signup](https://app.google.com/signup) and enter your name, work email address, and a strong password. After submitting the form, Google sends a verification email to the address you provided.
 
-    ```bash
-    your-cli init
-    ```
+    Open that email and click **Verify my email** to activate your account. If the email does not arrive within two minutes, check your spam folder or click **Resend verification email** on the confirmation screen.
   </Step>
-  <Step title="Run it">
-    Show the first thing a user does to see it working.
 
-    ```bash
-    your-cli start
-    ```
+  <Step title="Create Your Workspace">
+    After email verification, you are redirected to the workspace creation screen. A workspace is the top-level container for all your projects, team members, and integrations.
+
+    1. Enter a **Workspace Name** that reflects your organization or team (for example, `Acme Engineering`).
+    2. Choose a **URL slug** — this becomes your unique subdomain (for example, `acme-eng.google.com`).
+    3. Select your team size and primary use case, then click **Create Workspace**.
+
+    <Tip>
+      You can rename your workspace and change its settings at any time from **Settings → General**.
+    </Tip>
   </Step>
+
+  <Step title="Create Your First Project">
+    From the workspace dashboard, click **+ New Project** in the left sidebar. Fill in the following details:
+
+    | Field | Description |
+    |---|---|
+    | **Project Name** | A short, descriptive name (e.g., `Website Redesign`) |
+    | **Description** | An optional summary of the project's goal |
+    | **Visibility** | `Private` (only invited members) or `Workspace` (all workspace members) |
+
+    Click **Create Project**. You are taken directly into your new project's board view, where you can start adding tasks, automations, and integrations.
+  </Step>
+
+  <Step title="Generate an API Key">
+    To interact with the Google REST API programmatically, you need an API key tied to your account.
+
+    1. Click your avatar in the top-right corner and select **Settings**.
+    2. Navigate to the **API Keys** tab in the left settings menu.
+    3. Click **Generate New Key**, give it a descriptive name (e.g., `Local Development`), and click **Create**.
+    4. Copy the key immediately — it is shown only once.
+
+    <Note>
+      Your API keys are always accessible in **Settings → API Keys**, but the secret value is only displayed at the moment of creation. If you lose a key, revoke it and generate a new one.
+    </Note>
+
+    <Warning>
+      Never embed API keys directly in client-side code or commit them to source control. Use environment variables or a secrets manager to keep them safe.
+    </Warning>
+  </Step>
+
+  <Step title="Make Your First API Call">
+    With your API key in hand, you can now call the Google REST API. The `GET /v1/resources` endpoint returns a paginated list of all resources available in your workspace.
+
+    Replace `YOUR_API_KEY` with the key you generated in the previous step:
+
+    ```bash Terminal
+    curl --request GET \
+      --url https://api.google.com/v1/resources \
+      --header "Authorization: Bearer YOUR_API_KEY" \
+      --header "Content-Type: application/json"
+    ```
+
+    A successful response returns an HTTP `200 OK` status along with a JSON payload listing your workspace resources:
+
+    ```json Response
+    {
+      "data": [
+        {
+          "id": "res_01hx4z9k2m",
+          "name": "Website Redesign",
+          "type": "project",
+          "created_at": "2024-05-01T10:30:00Z"
+        }
+      ],
+      "meta": {
+        "total": 1,
+        "page": 1,
+        "per_page": 20
+      }
+    }
+    ```
+
+    You have successfully made your first Google API call. From here, explore the full API reference to create projects, manage tasks, trigger automations, and more.
+  </Step>
+
 </Steps>
 
-<Tip>
-  Give people a way to get help. This could be a link to a support page, a chat with a customer support agent, or a forum for your product.
+## Next Steps
 
-  Example: Need help? Reach out to us at [support@yourcompany.com](mailto:support@yourcompany.com).
-</Tip>
+Now that your account is set up and your API key is working, explore these areas to get the most out of Google:
+
+<CardGroup cols={2}>
+  <Card title="Account Setup" icon="user-gear" href="/get-started/account-setup">
+    Invite team members, assign roles, and configure your workspace settings.
+  </Card>
+  <Card title="Authentication" icon="key" href="/get-started/authentication">
+    Learn how to manage API keys, rotate credentials, and handle auth errors.
+  </Card>
+  <Card title="API Reference" icon="code" href="/api/overview">
+    Browse the full REST API reference with request and response schemas.
+  </Card>
+  <Card title="Integrations" icon="plug" href="/guides/integrations">
+    Connect Google with Slack, GitHub, Jira, and dozens of other tools.
+  </Card>
+</CardGroup>

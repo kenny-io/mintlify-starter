@@ -1,24 +1,11 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
-  "name": "Google",
+  "projectType": "saas",
+  "projectName": "Google",
+  "projectDescription": "A modern SaaS platform helping users and teams get things done faster.",
   "theme": "almond",
-  "colors": {
-    "primary": "#ef7025",
-    "light": "#eec9bc",
-    "dark": "#4fa1ab"
-  },
-  "favicon": "/favicon.svg",
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://app.google.com"
-    }
-  },
+  "primaryColor": "#ef7025",
+  "lightColor": "#eec9bc",
+  "darkColor": "#4fa1ab",
   "navigation": {
     "tabs": [
       {
@@ -90,5 +77,28 @@
         ]
       }
     ]
-  }
+  },
+  "keyFeatures": [
+    "Intuitive dashboard for managing projects and tasks",
+    "Team collaboration with role-based permissions",
+    "Powerful integrations with third-party tools",
+    "Automation workflows to streamline repetitive tasks",
+    "Real-time notifications and activity feeds",
+    "Secure API access with token-based authentication",
+    "Customizable settings and user preferences",
+    "Webhooks for event-driven integrations"
+  ],
+  "publicApiSurface": [
+    "GET /v1/resources",
+    "POST /v1/resources",
+    "GET /v1/resources/{id}",
+    "PUT /v1/resources/{id}",
+    "DELETE /v1/resources/{id}",
+    "GET /v1/users",
+    "POST /v1/users",
+    "GET /v1/users/{id}",
+    "POST /v1/webhooks",
+    "GET /v1/webhooks",
+    "DELETE /v1/webhooks/{id}"
+  ]
 }

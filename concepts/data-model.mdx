@@ -1,0 +1,118 @@
+---
+title: "Google Data Model: Workspaces, Projects, and Tasks"
+sidebarTitle: "Data Model"
+description: "Learn how data is structured in Google — from top-level workspaces down to individual tasks, members, and attachments."
+---
+
+Google organizes all of your data in a strict parent-child hierarchy. Every object belongs to exactly one parent, which means permissions, visibility, and settings cascade in a single, predictable direction — from the workspace at the top, down through projects and tasks, all the way to comments, attachments, and assignees at the leaf level. Understanding this hierarchy helps you model your work correctly and use the API with confidence.
+
+## Entity Hierarchy
+
+The following tree shows how every major object in Google relates to its parent:
+
+- **Workspace**
+  - Members (users with workspace-level roles)
+  - Integrations (connected external tools)
+  - **Projects**
+    - Project Members (workspace members with project-level roles)
+    - Labels (color-coded tags scoped to a project)
+    - **Tasks**
+      - Comments
+      - Attachments
+      - Assignees (one or more project members)
+      - Sub-tasks (nested tasks, one level deep)
+
+A workspace can contain unlimited projects. A project can contain unlimited tasks. Tasks support one level of sub-tasks — sub-tasks share the same fields as top-level tasks but cannot themselves contain further sub-tasks.
+
+## Entity Reference
+
+### Workspace
+
+A workspace is the root-level container for your organization. All billing, member management, and integration configuration happen at the workspace level.
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | `string (uuid)` | Unique identifier for the workspace. |
+| `name` | `string` | Human-readable display name (e.g., "Acme Corp"). |
+| `slug` | `string` | URL-safe identifier used in links and the API (e.g., `acme-corp`). |
+| `plan` | `enum` | Billing plan: `free`, `pro`, or `enterprise`. |
+| `created_at` | `datetime (ISO 8601)` | Timestamp when the workspace was created. |
+| `owner_id` | `string (uuid)` | Reference to the Member who owns the workspace. |
+
+### Project
+
+Projects are the primary organizational unit within a workspace. Each project has its own member list, labels, task statuses, and settings.
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | `string (uuid)` | Unique identifier for the project. |
+| `workspace_id` | `string (uuid)` | Reference to the parent workspace. |
+| `name` | `string` | Display name of the project. |
+| `description` | `string \| null` | Optional plain-text or markdown project description. |
+| `status` | `enum` | Current state: `active`, `on_hold`, `completed`, or `archived`. |
+| `owner_id` | `string (uuid)` | Reference to the Member who owns the project. |
+| `visibility` | `enum` | Who can see the project: `workspace` (all members) or `private` (explicit members only). |
+| `created_at` | `datetime (ISO 8601)` | Timestamp when the project was created. |
+| `due_date` | `date \| null` | Optional target completion date for the project. |
+
+### Task
+
+Tasks are the individual units of work inside a project. They are the most frequently created and updated objects in Google.
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | `string (uuid)` | Unique identifier for the task. |
+| `project_id` | `string (uuid)` | Reference to the parent project. |
+| `parent_task_id` | `string (uuid) \| null` | Set when this task is a sub-task; otherwise `null`. |
+| `title` | `string` | Short summary of the work to be done (max 255 chars). |
+| `description` | `string \| null` | Rich-text body with full task details. |
+| `status` | `enum` | Workflow state: `todo`, `in_progress`, `in_review`, `done`, or `cancelled`. |
+| `assignee` | `string (uuid) \| null` | Reference to the primary assigned Member. |
+| `due_date` | `date \| null` | Target completion date for the task. |
+| `priority` | `enum` | Urgency level: `none`, `low`, `medium`, `high`, or `urgent`. |
+| `labels` | `array[string]` | List of label IDs attached to the task. |
+| `created_at` | `datetime (ISO 8601)` | Timestamp when the task was created. |
+| `updated_at` | `datetime (ISO 8601)` | Timestamp of the most recent update to the task. |
+
+### Comment
+
+Comments are threaded messages attached to a task. Each comment supports rich text and `@mention` notifications.
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | `string (uuid)` | Unique identifier for the comment. |
+| `task_id` | `string (uuid)` | Reference to the parent task. |
+| `author_id` | `string (uuid)` | Reference to the Member who wrote the comment. |
+| `body` | `string` | Rich-text content of the comment. |
+| `created_at` | `datetime (ISO 8601)` | Timestamp when the comment was posted. |
+| `edited_at` | `datetime (ISO 8601) \| null` | Timestamp of last edit, or `null` if never edited. |
+
+### Attachment
+
+Attachments are files uploaded to a task. They are stored securely and linked to their parent task.
+
+| Field | Type | Description |
+|---|---|---|
+| `id` | `string (uuid)` | Unique identifier for the attachment. |
+| `task_id` | `string (uuid)` | Reference to the parent task. |
+| `uploader_id` | `string (uuid)` | Reference to the Member who uploaded the file. |
+| `filename` | `string` | Original file name including extension. |
+| `size_bytes` | `integer` | File size in bytes (max 262,144,000 — 250 MB). |
+| `mime_type` | `string` | MIME type detected at upload (e.g., `application/pdf`). |
+| `url` | `string (url)` | Signed, time-limited download URL. |
+| `created_at` | `datetime (ISO 8601)` | Timestamp when the file was uploaded. |
+
+## Relationships at a Glance
+
+<Note>
+  All relationships in Google use UUIDs as foreign keys. When using the REST API, you can expand related objects inline (e.g., `?expand=assignee,project`) to avoid multiple round-trips. See the [API Reference](/api/overview) for supported expand parameters per endpoint.
+</Note>
+
+The cascade rules below describe what happens when a parent object is deleted:
+
+<Accordion title="Deletion cascade behavior">
+  - **Delete Workspace** — permanently deletes all projects, tasks, comments, attachments, and member records inside it. This action is irreversible.
+  - **Delete Project** — permanently deletes all tasks, comments, attachments, and labels inside the project.
+  - **Delete Task** — permanently deletes all sub-tasks, comments, and attachments on that task.
+  - **Remove Member** — unassigns them from all tasks and removes their comments' authorship attribution (comment bodies are retained).
+</Accordion>

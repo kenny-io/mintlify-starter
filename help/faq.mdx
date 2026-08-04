@@ -1,0 +1,161 @@
+---
+title: "Frequently Asked Questions About Google"
+sidebarTitle: "FAQ"
+description: "Answers to the most common questions about Google — plans, billing, data export, integrations, API limits, and account management."
+---
+
+Google is built to be flexible and straightforward, but you may still have questions as you get started or scale your usage. This page compiles the most common questions our users ask, covering everything from billing and data handling to integrations and workspace management.
+
+<AccordionGroup>
+  <Accordion title="What plans does Google offer?">
+    Google offers four tiers to fit teams of every size:
+
+    - **Free** — Ideal for individuals and small teams just getting started. Includes up to 3 projects, 5 users, and 100 automation runs per month.
+    - **Starter** — Designed for growing teams. Includes up to 20 projects, 25 users, 2,000 automation runs per month, and priority email support.
+    - **Pro** — Built for larger organizations that need advanced workflows and integrations. Includes unlimited projects, 100 users, 20,000 automation runs per month, SSO, and API access.
+    - **Enterprise** — Custom pricing for organizations requiring dedicated infrastructure, SLA guarantees, custom contracts, and a dedicated success manager.
+
+    Visit the [Pricing page](/introduction) to compare plans side by side and find the right fit for your team.
+  </Accordion>
+
+  <Accordion title="Can I change my plan at any time?">
+    Yes — you can upgrade or downgrade your plan at any time from your account settings.
+
+    - **Upgrading** takes effect immediately. You are billed a prorated amount for the remainder of your current billing cycle.
+    - **Downgrading** takes effect at the start of your next billing cycle. Your current plan's features remain active until that date.
+
+    <Tip>
+      Before downgrading, review your current usage against the lower plan's limits. If you exceed those limits at the time of downgrade, Google will prompt you to reduce usage — for example, by archiving projects or removing inactive team members.
+    </Tip>
+
+    To change your plan, go to **Settings → Billing → Change Plan** and select the tier that fits your needs.
+  </Accordion>
+
+  <Accordion title="How do I export my data?">
+    Google gives you full ownership of your data, and you can export it at any time in multiple formats.
+
+    <Steps>
+      <Step title="Open Workspace Settings">
+        Navigate to **Settings → Workspace → Data Management**.
+      </Step>
+      <Step title="Select Export">
+        Click **Export Data** and choose the scope — you can export a single project, multiple projects, or your entire workspace.
+      </Step>
+      <Step title="Choose a format">
+        Select your preferred format: **JSON** (full fidelity, includes all metadata), **CSV** (tabular data for spreadsheets), or **PDF** (human-readable reports).
+      </Step>
+      <Step title="Request and download">
+        Click **Generate Export**. Depending on your data volume, the export may take a few minutes. You will receive an email with a download link once it is ready. The link is valid for 72 hours.
+      </Step>
+    </Steps>
+
+    <Note>
+      Enterprise customers can also request exports via the API using the `/v1/exports` endpoint. See the [API Reference](/api/resources) for details.
+    </Note>
+  </Accordion>
+
+  <Accordion title="Is there a free trial?">
+    Yes. Every new Google account starts with a **14-day free trial** of the Pro plan, no credit card required. During the trial you have full access to all Pro features, including SSO, API access, and advanced automation.
+
+    At the end of your trial, your workspace automatically moves to the Free plan unless you choose to upgrade. None of your data is deleted — you simply lose access to Pro-only features until you subscribe.
+
+    <Tip>
+      Make the most of your trial by connecting your existing tools (GitHub, Slack, Zapier) and running a live workflow end-to-end. This gives you a clear picture of the value before you commit.
+    </Tip>
+  </Accordion>
+
+  <Accordion title="How many projects can I create?">
+    The number of projects you can create depends on your plan:
+
+    | Plan       | Projects         |
+    |------------|-----------------|
+    | Free       | Up to 3          |
+    | Starter    | Up to 20         |
+    | Pro        | Unlimited        |
+    | Enterprise | Unlimited        |
+
+    Archived projects do not count toward your active project limit. To archive a project, open it, click the **⋯** menu in the top-right corner, and select **Archive Project**.
+
+    If you reach your limit on the Free or Starter plan, Google will prompt you to archive an existing project or upgrade your plan before you can create a new one.
+  </Accordion>
+
+  <Accordion title="Can I use Google with my existing tools?">
+    Absolutely. Google offers native integrations with the most popular tools teams already use, including:
+
+    - **Communication** — Slack, Microsoft Teams
+    - **Version control** — GitHub, GitLab, Bitbucket
+    - **Automation** — Zapier, Make (formerly Integromat)
+    - **Cloud storage** — Google Drive, Dropbox, OneDrive
+    - **CRM & support** — HubSpot, Zendesk, Salesforce
+    - **Calendar** — Google Calendar, Outlook Calendar
+
+    For tools not covered by a native integration, you can use the **Google REST API** or connect via **Zapier** to reach thousands of additional apps. Visit the [Integrations page](/guides/integrations) to browse the full catalog and follow setup guides.
+  </Accordion>
+
+  <Accordion title="Where is my data stored?">
+    Google stores all customer data in **SOC 2 Type II** and **ISO 27001** certified data centers. By default, your data resides in the **United States (us-east-1)**.
+
+    Enterprise customers can request **data residency** in the following regions:
+
+    - European Union (eu-west-1 — Frankfurt)
+    - Asia-Pacific (ap-southeast-1 — Singapore)
+
+    All data is encrypted **at rest** using AES-256 and **in transit** using TLS 1.2 or higher. Google does not sell or share your data with third parties. For the full details, review our [Privacy Policy](/help/faq) and [Security Overview](/configuration/security).
+  </Accordion>
+
+  <Accordion title="How do I cancel my subscription?">
+    You can cancel your subscription at any time — no hoops to jump through.
+
+    <Steps>
+      <Step title="Go to Billing Settings">
+        Navigate to **Settings → Billing**.
+      </Step>
+      <Step title="Click Cancel Subscription">
+        Scroll to the **Subscription** section and click **Cancel Subscription**.
+      </Step>
+      <Step title="Confirm cancellation">
+        Review the confirmation dialog. It will show you the date your paid access ends (the last day of your current billing cycle). Click **Confirm Cancellation** to proceed.
+      </Step>
+    </Steps>
+
+    After cancellation, your workspace automatically moves to the Free plan at the end of the billing cycle. All your data is preserved — you are not locked out and nothing is deleted. If you decide to resubscribe later, your workspace picks up exactly where you left off.
+
+    <Warning>
+      Google does not offer prorated refunds for mid-cycle cancellations. If you have questions about a specific billing situation, contact [support@google.com](mailto:support@google.com).
+    </Warning>
+  </Accordion>
+
+  <Accordion title="Can I have multiple workspaces?">
+    Yes. A single Google account can belong to multiple workspaces, and you can create as many workspaces as you need. This is useful if you want to keep client projects, internal teams, or different business units completely separated.
+
+    - To **create a new workspace**, click your workspace name in the top-left corner and select **Create New Workspace**.
+    - To **switch between workspaces**, click your workspace name and select the target workspace from the dropdown.
+
+    Each workspace has its own members, projects, billing plan, and settings. If you need a workspace for an external client, you can invite them to that workspace without giving them access to any of your other workspaces.
+
+    <Note>
+      Each workspace requires its own subscription. Owning multiple workspaces does not combine usage toward a single plan limit.
+    </Note>
+  </Accordion>
+
+  <Accordion title="What happens if I exceed my API rate limit?">
+    If your integration or application sends requests faster than your plan's rate limit allows, the Google API returns an **HTTP 429 Too Many Requests** response.
+
+    **Default rate limits by plan:**
+
+    | Plan       | Requests per minute |
+    |------------|---------------------|
+    | Free       | 60                  |
+    | Starter    | 300                 |
+    | Pro        | 1,000               |
+    | Enterprise | Custom              |
+
+    When you receive a 429 response, the API includes a `Retry-After` header indicating how many seconds to wait before retrying. Implement **exponential backoff** in your client to handle these gracefully — start with a 1-second delay, then double on each subsequent retry up to a maximum of 32 seconds.
+
+    <Tip>
+      Use the `X-RateLimit-Remaining` and `X-RateLimit-Reset` response headers to monitor your usage proactively and throttle requests before hitting the limit.
+    </Tip>
+
+    Enterprise customers can request higher rate limits as part of their contract. Reach out to your account manager or email [support@google.com](mailto:support@google.com) to discuss custom limits.
+  </Accordion>
+</AccordionGroup>

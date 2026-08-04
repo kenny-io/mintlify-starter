@@ -1,0 +1,158 @@
+---
+title: "Configure Notifications and Alerts in Google"
+sidebarTitle: "Notifications"
+description: "Control when and how Google notifies you — configure email digests, in-app alerts, and webhook-based notifications per project."
+---
+
+Google keeps every team member informed through a layered notification system — real-time alerts inside the app, email digests you control, and programmable webhooks for custom integrations. Tuning these settings prevents inbox overload while making sure the updates that matter most reach you without delay.
+
+## Accessing Notification Settings
+
+To open your notification preferences, click your **avatar** in the top-right corner and select **Notification Settings**, or navigate to **Settings → Notifications** from the sidebar. You can configure global defaults here and then override them on a per-project basis.
+
+---
+
+## Notification Types
+
+Google supports three distinct notification channels. Each channel can be configured independently so you get the right information through the right medium.
+
+<Tabs>
+  <Tab title="In-App">
+    In-app notifications appear in the **notification bell** (🔔) in the top-right corner of every page and in the slide-out **Activity Panel**. They are always on and update in real time.
+
+    **To configure in-app notifications:**
+
+    <Steps>
+      <Step title="Open Notification Settings">
+        Navigate to **Settings → Notifications → In-App**.
+      </Step>
+      <Step title="Choose which events trigger alerts">
+        Toggle individual event types on or off:
+        - Task assigned to you
+        - Comment mentioning you (`@username`)
+        - Task status changed
+        - Due date approaching (24-hour advance notice)
+        - Project milestone reached
+      </Step>
+      <Step title="Set notification grouping">
+        Choose **Group by project** to bundle related alerts into a single notification entry, or select **Show individually** for a flat chronological feed.
+      </Step>
+      <Step title="Save">
+        Click **Save Preferences**. Changes apply immediately across all sessions.
+      </Step>
+    </Steps>
+
+    **Clearing notifications:** Click **Mark all as read** at the top of the notification panel, or dismiss individual items by hovering and clicking the **×** icon.
+  </Tab>
+
+  <Tab title="Email">
+    Email notifications give you a written record of activity and keep you informed even when you are not actively using the platform.
+
+    **To configure email notifications:**
+
+    <Steps>
+      <Step title="Open email preferences">
+        Go to **Settings → Notifications → Email**.
+      </Step>
+      <Step title="Select your digest frequency">
+        Choose how often Google batches and sends activity emails:
+
+        | Frequency | Description |
+        |-----------|-------------|
+        | **Real-time** | An individual email is sent immediately after each triggering event. |
+        | **Daily digest** | All activity is bundled into one email, delivered at 08:00 in your workspace timezone. |
+        | **Weekly digest** | A single summary email arrives every Monday morning covering the prior week's activity. |
+        | **Off** | No emails are sent. In-app notifications remain active. |
+      </Step>
+      <Step title="Select event categories">
+        Enable or disable email delivery per event category: assignments, mentions, status changes, comments, and billing alerts. Billing alerts are always delivered regardless of your digest setting.
+      </Step>
+      <Step title="Verify your email address">
+        If your email address has not been verified, a banner prompts you to resend the verification link. Email notifications will not deliver to unverified addresses.
+      </Step>
+      <Step title="Save">
+        Click **Save Email Preferences**.
+      </Step>
+    </Steps>
+
+    <Tip>
+      Set your digest to **Daily** if you find real-time emails disruptive. You will still see live in-app alerts throughout the day, and the morning digest gives you a clean summary before your first meeting.
+    </Tip>
+  </Tab>
+
+  <Tab title="Webhook">
+    Webhooks let you push Google notification events to any external URL — a Slack channel, a custom dashboard, a CI/CD pipeline, or your own backend service.
+
+    **To configure a webhook notification:**
+
+    <Steps>
+      <Step title="Open webhook settings">
+        Go to **Settings → Notifications → Webhooks**, then click **Add Webhook**.
+      </Step>
+      <Step title="Enter the endpoint URL">
+        Paste the destination URL into the **Endpoint URL** field. The URL must be publicly reachable over HTTPS.
+      </Step>
+      <Step title="Select trigger events">
+        Check each event type you want to forward:
+        - `task.created`
+        - `task.updated`
+        - `task.completed`
+        - `comment.created`
+        - `project.status_changed`
+        - `member.invited`
+      </Step>
+      <Step title="Add a secret (recommended)">
+        Enter a **Signing Secret** to enable HMAC-SHA256 request signing. Google will include an `X-Google-Signature` header on every request so your endpoint can verify authenticity.
+      </Step>
+      <Step title="Send a test event">
+        Click **Send Test Event** to fire a sample `ping` payload to your endpoint. Confirm your server returns a `200 OK` response.
+      </Step>
+      <Step title="Activate the webhook">
+        Toggle the webhook **Active** and click **Save**. Deliveries begin immediately.
+      </Step>
+    </Steps>
+
+    <Note>
+      For full details on webhook payload schemas, retry logic, and delivery logs, see the [Webhooks API reference](/api/webhooks) page.
+    </Note>
+  </Tab>
+</Tabs>
+
+---
+
+## Per-Project Notification Preferences
+
+Global notification settings apply across your entire workspace, but you can override them for individual projects. This is especially useful for large, high-volume projects that would otherwise flood your feed.
+
+To set per-project preferences:
+
+1. Open the project you want to configure.
+2. Click the **•••** menu in the project header and select **Notification Preferences**.
+3. Choose one of the following modes:
+
+<CardGroup cols={3}>
+  <Card title="All Activity" icon="bell">
+    Receive notifications for every event in this project, regardless of whether you are directly involved.
+  </Card>
+  <Card title="Mentions Only" icon="at">
+    Only notify you when someone mentions you (`@username`) or assigns a task directly to you.
+  </Card>
+  <Card title="Muted" icon="bell-slash">
+    Suppress all notifications from this project entirely. You can still view activity in the project's feed manually.
+  </Card>
+</CardGroup>
+
+<Tip>
+  Mute projects you are a passive observer on — for example, a company-wide announcements project or a long-running archive. You can always un-mute from the same **•••** menu if you need to re-engage.
+</Tip>
+
+---
+
+## Managing Notification Overload
+
+If you find yourself overwhelmed by alerts, use the following strategies to reduce noise without missing critical updates:
+
+- **Use Daily or Weekly digests** for email so activity is consolidated rather than streamed.
+- **Mute high-volume projects** and check them intentionally during scheduled review time.
+- **Scope webhook triggers tightly** — only subscribe to the specific events your integration actually needs.
+- **Review your per-project settings** quarterly as your team's project portfolio evolves.

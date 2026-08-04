@@ -1,0 +1,245 @@
+---
+title: "API Authentication: Bearer Tokens and API Keys"
+sidebarTitle: "Authentication"
+description: "Authenticate Google API requests using Bearer token authentication. Learn how to generate, use, rotate, and revoke API keys programmatically."
+---
+
+Every request to the Google API must be authenticated. Google uses the **Bearer token** scheme — you generate an API key from your workspace settings or via the API itself, then pass that key in the `Authorization` header on every request. Unauthenticated requests are rejected immediately with a `401 Unauthorized` response, so make sure your key is present and valid before you start building.
+
+## How Bearer Authentication Works
+
+Include your API key as a Bearer token in the `Authorization` header of every HTTP request:
+
+```
+Authorization: Bearer YOUR_API_KEY
+```
+
+The API validates the token on each request — there are no sessions or cookies involved. This stateless model makes the API safe to call from servers, serverless functions, CI pipelines, and any other automated environment.
+
+## Generating an API Key
+
+You can create an API key in two ways: through the Google dashboard or directly via the API.
+
+<Steps>
+  <Step title="Open API Key settings">
+    In your Google workspace, navigate to **Settings → API Keys**. This page lists all active keys and lets you manage their scopes.
+  </Step>
+  <Step title="Create a new key">
+    Click **New API Key**, give it a descriptive name (e.g., `ci-pipeline-prod`), and select the scopes your integration needs. Then click **Generate**.
+  </Step>
+  <Step title="Copy the key immediately">
+    The full key value is shown **only once**. Copy it to a secure secret store (such as your CI provider's secrets vault or a tool like 1Password) before closing the dialog. If you lose it, you must rotate the key.
+  </Step>
+  <Step title="Use the key in your requests">
+    Pass the key in the `Authorization` header as shown in the examples below.
+  </Step>
+</Steps>
+
+### Generate a key via the API
+
+If you need to provision keys programmatically (e.g., during infrastructure setup), send a `POST` request to `/v1/api-keys`. You must authenticate this request with an existing key that has the **admin** scope.
+
+```bash
+curl --request POST \
+  --url "https://api.google.com/v1/api-keys" \
+  --header "Authorization: Bearer YOUR_ADMIN_API_KEY" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "name": "ci-pipeline-staging",
+    "scopes": ["read", "write"]
+  }'
+```
+
+**Response:**
+
+```json
+{
+  "data": {
+    "id": "key_04PX7RNVQ2TMLBCHDE83YWSF",
+    "name": "ci-pipeline-staging",
+    "scopes": ["read", "write"],
+    "key": "ggl_sk_v1_4Kx9mZpQrT2uYwNsJdLhBvCeOaFiGn7R",
+    "created_at": "2024-06-10T08:30:00Z",
+    "last_used_at": null
+  },
+  "meta": null,
+  "error": null
+}
+```
+
+<Warning>
+  **Never commit API keys to source control.** Store keys in environment variables or a dedicated secrets manager. A leaked key grants full access at its assigned scope to anyone who finds it — rotate it immediately if you suspect exposure.
+</Warning>
+
+## Token Scopes
+
+Each API key is issued with one or more scopes that restrict what the key can do. Apply the **principle of least privilege** — only grant the scopes an integration actually needs.
+
+| Scope | Access granted |
+|---|---|
+| `read` | `GET` requests on all resources (projects, tasks, workflows, users) |
+| `write` | `POST`, `PUT`, `PATCH`, and `DELETE` requests on all resources |
+| `admin` | All `read` and `write` permissions, plus key management (`/v1/api-keys`) |
+
+A key with only `read` scope cannot create or modify resources. Attempting a write with a `read`-only key returns a `403 Forbidden` response.
+
+## Making Authenticated Requests
+
+The following examples show how to call `GET /v1/projects` with your API key in three common environments.
+
+<CodeGroup>
+
+```bash cURL
+curl --request GET \
+  --url "https://api.google.com/v1/projects" \
+  --header "Authorization: Bearer ggl_sk_v1_4Kx9mZpQrT2uYwNsJdLhBvCeOaFiGn7R" \
+  --header "Accept: application/json"
+```
+
+```javascript JavaScript (fetch)
+const response = await fetch("https://api.google.com/v1/projects", {
+  method: "GET",
+  headers: {
+    "Authorization": `Bearer ${process.env.GOOGLE_API_KEY}`,
+    "Accept": "application/json",
+  },
+});
+
+if (!response.ok) {
+  const { error } = await response.json();
+  throw new Error(`API error ${error.status}: ${error.message}`);
+}
+
+const { data, meta } = await response.json();
+console.log(`Fetched ${data.length} of ${meta.total} projects`);
+```
+
+```python Python (requests)
+import os
+import requests
+
+api_key = os.environ["GOOGLE_API_KEY"]
+
+response = requests.get(
+    "https://api.google.com/v1/projects",
+    headers={
+        "Authorization": f"Bearer {api_key}",
+        "Accept": "application/json",
+    },
+)
+
+response.raise_for_status()
+payload = response.json()
+print(f"Fetched {len(payload['data'])} of {payload['meta']['total']} projects")
+```
+
+</CodeGroup>
+
+## Authentication Error Responses
+
+The API returns distinct HTTP status codes depending on the nature of the authentication failure.
+
+### 401 Unauthorized — missing or invalid token
+
+Returned when the `Authorization` header is absent, malformed, or contains an unrecognized key.
+
+```json
+{
+  "data": null,
+  "meta": null,
+  "error": {
+    "code": "UNAUTHORIZED",
+    "message": "A valid Bearer token is required. Include an Authorization header with your API key.",
+    "status": 401
+  }
+}
+```
+
+### 403 Forbidden — insufficient scope
+
+Returned when the token is valid but does not have the scope required by the endpoint.
+
+```json
+{
+  "data": null,
+  "meta": null,
+  "error": {
+    "code": "FORBIDDEN",
+    "message": "This action requires the 'write' scope. The provided API key only has 'read' access.",
+    "status": 403
+  }
+}
+```
+
+## Managing API Keys via the API
+
+### List all API keys
+
+Retrieve every key in your workspace along with its name, scopes, and last-used timestamp.
+
+```bash
+curl --request GET \
+  --url "https://api.google.com/v1/api-keys" \
+  --header "Authorization: Bearer YOUR_ADMIN_API_KEY"
+```
+
+**Response:**
+
+```json
+{
+  "data": [
+    {
+      "id": "key_04PX7RNVQ2TMLBCHDE83YWSF",
+      "name": "ci-pipeline-staging",
+      "scopes": ["read", "write"],
+      "created_at": "2024-06-10T08:30:00Z",
+      "last_used_at": "2024-06-11T14:22:05Z"
+    },
+    {
+      "id": "key_09QY8SOWB3UNCDIEF94ZXTGH",
+      "name": "data-export-script",
+      "scopes": ["read"],
+      "created_at": "2024-05-01T10:00:00Z",
+      "last_used_at": "2024-06-09T07:11:44Z"
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "per_page": 20,
+    "total": 2
+  },
+  "error": null
+}
+```
+
+### Revoke an API key
+
+Delete a key by its `id` to immediately invalidate it. Any requests still using the revoked key will receive a `401 Unauthorized` response.
+
+```bash
+curl --request DELETE \
+  --url "https://api.google.com/v1/api-keys/key_04PX7RNVQ2TMLBCHDE83YWSF" \
+  --header "Authorization: Bearer YOUR_ADMIN_API_KEY"
+```
+
+A successful revocation returns HTTP `204 No Content` with an empty body.
+
+## Rotating a Compromised Key
+
+If you suspect a key has been exposed, rotate it immediately:
+
+<Steps>
+  <Step title="Create a replacement key">
+    Call `POST /v1/api-keys` with the same name and scopes as the compromised key to generate a fresh credential.
+  </Step>
+  <Step title="Deploy the new key">
+    Update every environment and service that uses the old key — replace the value in your secrets manager, CI variables, and any deployed configuration.
+  </Step>
+  <Step title="Revoke the old key">
+    Call `DELETE /v1/api-keys/{id}` with the old key's ID to invalidate it. Verify your services remain healthy before closing the incident.
+  </Step>
+</Steps>
+
+<Tip>
+  Set a calendar reminder to rotate API keys every 90 days as a routine security hygiene practice, even if no compromise is suspected.
+</Tip>

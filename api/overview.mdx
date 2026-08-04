@@ -1,0 +1,190 @@
+---
+title: "Google REST API Overview and Getting Started"
+sidebarTitle: "Overview"
+description: "The Google REST API gives you programmatic access to your workspace data. Learn the base URL, versioning, request format, and response structure."
+---
+
+The Google REST API lets you programmatically manage projects, automate workflows, and integrate your favorite tools directly into your own applications. Every feature available in the dashboard is also accessible through the API, so you can build custom automations, sync data with external systems, and extend Google to fit exactly how your team works.
+
+## Base URL and Versioning
+
+All API requests target the following base URL:
+
+```
+https://api.google.com/v1
+```
+
+The current stable version is **v1**. The version is embedded in the URL path so that future breaking changes ship as a new version (`v2`, `v3`, …) without disrupting existing integrations. When a new major version is released, the previous version remains supported for a minimum of 12 months, giving you ample time to migrate.
+
+<Note>
+  Always pin your integration to an explicit version (e.g., `/v1/`) rather than relying on an unversioned alias. This ensures your code is unaffected by future major-version promotions.
+</Note>
+
+## Request Format
+
+Send all request bodies as JSON and include the `Content-Type: application/json` header on every write operation (`POST`, `PUT`, `PATCH`). `GET` and `DELETE` requests do not require a body or a `Content-Type` header.
+
+| Requirement | Value |
+|---|---|
+| Base URL | `https://api.google.com/v1` |
+| Protocol | HTTPS only |
+| Request body format | JSON |
+| Required header (writes) | `Content-Type: application/json` |
+| Authentication header | `Authorization: Bearer <token>` |
+
+<Warning>
+  The API only accepts connections over **HTTPS**. Plain HTTP requests are rejected with a `301 Moved Permanently` redirect. Always use `https://` in your base URL to avoid unnecessary round-trips.
+</Warning>
+
+## HTTP Methods
+
+The Google API follows standard REST conventions for HTTP verbs:
+
+| Method | Purpose |
+|---|---|
+| `GET` | Retrieve a resource or list of resources |
+| `POST` | Create a new resource |
+| `PUT` | Replace an existing resource entirely |
+| `PATCH` | Partially update an existing resource |
+| `DELETE` | Remove a resource |
+
+## Response Format
+
+Every response — success or failure — is wrapped in a consistent JSON envelope with three top-level fields:
+
+| Field | Type | Description |
+|---|---|---|
+| `data` | object \| array \| null | The requested resource(s). `null` on errors. |
+| `meta` | object \| null | Pagination metadata for list responses. `null` for single-resource responses. |
+| `error` | object \| null | Error details. `null` on successful responses. |
+
+### Success envelope
+
+```json
+{
+  "data": {
+    "id": "proj_01HZ9K2XVB7Q8NCMR3T5Y6WP",
+    "name": "Website Redesign",
+    "status": "active",
+    "created_at": "2024-03-15T09:22:11Z"
+  },
+  "meta": null,
+  "error": null
+}
+```
+
+### Error envelope
+
+```json
+{
+  "data": null,
+  "meta": null,
+  "error": {
+    "code": "RESOURCE_NOT_FOUND",
+    "message": "No project with that ID exists in your workspace.",
+    "status": 404
+  }
+}
+```
+
+## Pagination
+
+List endpoints return paginated results. Control pagination with two query parameters and read the totals from the `meta` field in the response:
+
+| Parameter / Field | Location | Description |
+|---|---|---|
+| `page` | Query param | The page number to fetch (1-indexed, default `1`) |
+| `per_page` | Query param | Results per page (default `20`, max `100`) |
+| `meta.page` | Response body | Current page number |
+| `meta.per_page` | Response body | Page size used for this response |
+| `meta.total` | Response body | Total number of matching records |
+
+### Paginated list response
+
+```json
+{
+  "data": [
+    {
+      "id": "proj_01HZ9K2XVB7Q8NCMR3T5Y6WP",
+      "name": "Website Redesign",
+      "status": "active"
+    },
+    {
+      "id": "proj_02AB3C4DEF5G6HIJKLMNOPQR",
+      "name": "Mobile App Launch",
+      "status": "active"
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "per_page": 20,
+    "total": 45
+  },
+  "error": null
+}
+```
+
+Calculate the total number of pages with `Math.ceil(meta.total / meta.per_page)`. Fetch the next page by incrementing `page` until `page * per_page >= total`.
+
+## Quick Start: List Your Projects
+
+The following example fetches the first page of projects in your workspace. Replace `YOUR_API_KEY` with a real key — see the [Authentication](/api/authentication) guide to generate one.
+
+```bash
+curl --request GET \
+  --url "https://api.google.com/v1/projects?page=1&per_page=20" \
+  --header "Authorization: Bearer YOUR_API_KEY" \
+  --header "Accept: application/json"
+```
+
+A successful `200 OK` response looks like this:
+
+```json
+{
+  "data": [
+    {
+      "id": "proj_01HZ9K2XVB7Q8NCMR3T5Y6WP",
+      "name": "Website Redesign",
+      "status": "active",
+      "owner": "user_9QP2LMXK",
+      "created_at": "2024-03-15T09:22:11Z",
+      "updated_at": "2024-06-01T14:05:33Z"
+    },
+    {
+      "id": "proj_02AB3C4DEF5G6HIJKLMNOPQR",
+      "name": "Mobile App Launch",
+      "status": "active",
+      "owner": "user_7NQ4RMYJ",
+      "created_at": "2024-04-02T11:10:05Z",
+      "updated_at": "2024-05-28T08:44:17Z"
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "per_page": 20,
+    "total": 45
+  },
+  "error": null
+}
+```
+
+## Next Steps
+
+Explore the core concepts you need to integrate with Google successfully:
+
+<CardGroup cols={2}>
+  <Card
+    title="Authentication"
+    icon="key"
+    href="/api/authentication"
+  >
+    Generate API keys, pass Bearer tokens, manage scopes, and safely rotate or revoke credentials.
+  </Card>
+  <Card
+    title="Rate Limits"
+    icon="gauge-high"
+    href="/api/rate-limits"
+  >
+    Understand request quotas by plan, read rate-limit headers, and implement graceful backoff logic.
+  </Card>
+</CardGroup>

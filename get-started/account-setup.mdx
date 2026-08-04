@@ -1,0 +1,97 @@
+---
+title: "Setting Up Your Google Account and Workspace"
+sidebarTitle: "Account Setup"
+description: "Create your Google account, configure your workspace, invite team members, and assign roles to get your team collaborating quickly."
+---
+
+Getting your Google workspace configured correctly from the start saves you time and prevents access headaches as your team grows. This guide walks you through creating and verifying your account, naming your workspace, inviting collaborators, and assigning the right roles so everyone has exactly the access they need.
+
+<Steps>
+
+  <Step title="Create Your Account">
+    Go to [app.google.com/signup](https://app.google.com/signup) and complete the registration form with your full name, work email address, and a password that is at least 12 characters long.
+
+    Google recommends using your company email address. This makes it easier to enforce single sign-on (SSO) policies and ensures that team members can be verified against your organization's domain in the future.
+
+    Once you submit the form, you are taken to an email verification screen while Google sends a confirmation message to your inbox.
+  </Step>
+
+  <Step title="Verify Your Email Address">
+    Open the verification email from Google (subject: **"Confirm your Google account"**) and click the **Verify my email** button. This link is valid for 24 hours.
+
+    After verification, your account is fully activated and you are redirected to the workspace creation flow. If you do not see the email within a couple of minutes, take the following steps:
+
+    - Check your **Spam** or **Junk** folder.
+    - Add `no-reply@google.com` to your contacts and click **Resend verification email**.
+    - If your company uses email filtering, ask your IT administrator to allowlist the `google.com` sending domain.
+  </Step>
+
+  <Step title="Name and Configure Your Workspace">
+    Your workspace is the shared environment where all projects, automations, and integrations live. Give it a clear, recognizable name — typically your company or team name.
+
+    Fill in the workspace creation form:
+
+    | Field | Guidance |
+    |---|---|
+    | **Workspace Name** | Use your company or team name (e.g., `Acme Corp`) |
+    | **URL Slug** | Becomes your subdomain: `your-slug.google.com` — lowercase, hyphens only |
+    | **Industry** | Helps Google surface relevant templates and integrations |
+    | **Team Size** | Used to optimize default plan recommendations |
+
+    Click **Create Workspace** to continue. You can update the name and slug later under **Settings → General**, though changing the slug will invalidate any shared links that use the old URL.
+
+    <Tip>
+      Invite your team members before you start creating projects. That way you can assign ownership and permissions to projects from the moment you create them, avoiding a backlog of access requests later.
+    </Tip>
+  </Step>
+
+  <Step title="Invite Team Members">
+    From your workspace dashboard, navigate to **Settings → Members** and click **Invite Members**.
+
+    Enter one or more email addresses in the invitation field — separate multiple addresses with commas or line breaks. Select a default role for all invitees in this batch (you can adjust roles individually after they accept), then click **Send Invitations**.
+
+    Each invitee receives an email with a secure join link valid for 72 hours. If a link expires before they accept, you can resend the invitation from the **Pending Invitations** list on the same page.
+
+    <Note>
+      If your workspace is on the Business or Enterprise plan, you can enforce domain-restricted sign-up so that only email addresses matching your company domain (e.g., `@acme.com`) can accept invitations.
+    </Note>
+  </Step>
+
+  <Step title="Assign Roles to Team Members">
+    Google uses a three-tier role model to control what each member can see and do within a workspace. Assign roles according to each person's responsibilities.
+
+    Navigate to **Settings → Members**, find the member you want to update, click the role badge next to their name, and select the appropriate role from the dropdown.
+
+    | Role | Permissions |
+    |---|---|
+    | **Admin** | Full access to all projects, settings, billing, member management, and API keys. Can create, edit, and delete any resource in the workspace. |
+    | **Member** | Can create and manage projects they own or are invited to. Cannot access workspace settings, billing, or other members' private projects. |
+    | **Viewer** | Read-only access to projects they are explicitly invited to. Cannot create projects, run automations, or modify any data. |
+
+    You can also assign roles at the project level, overriding the workspace-level role. For example, a workspace **Member** can be granted **Admin** access on a specific project if they are leading it.
+
+    <Warning>
+      Grant the **Admin** role only to people who genuinely need access to billing and workspace-wide settings. Over-provisioning admin rights is one of the most common sources of accidental data loss and unintended configuration changes.
+    </Warning>
+  </Step>
+
+</Steps>
+
+## Managing Your Team Over Time
+
+As your organization evolves, you will need to add new members, adjust roles, and occasionally remove access. Here is a quick reference for common team management tasks:
+
+<CardGroup cols={2}>
+  <Card title="Change a Member's Role" icon="user-pen">
+    Go to **Settings → Members**, click the role badge next to the member's name, and select a new role. Changes take effect immediately — the member does not need to log out and back in.
+  </Card>
+  <Card title="Remove a Member" icon="user-minus">
+    Click the **⋯** menu next to a member's name and select **Remove from Workspace**. Their data and contributions remain intact; they simply lose access to the workspace.
+  </Card>
+  <Card title="Transfer Ownership" icon="arrow-right-arrow-left">
+    To transfer workspace ownership to another Admin, go to **Settings → General → Transfer Ownership**. The new owner must already hold the Admin role before the transfer is initiated.
+  </Card>
+  <Card title="Configure SSO" icon="shield-check">
+    Enterprise plans can enforce SAML-based SSO via **Settings → Security → Single Sign-On**. Once enabled, all members must authenticate through your identity provider.
+  </Card>
+</CardGroup>

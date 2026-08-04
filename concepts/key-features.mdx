@@ -1,0 +1,82 @@
+---
+title: "Key Features of the Google Platform"
+sidebarTitle: "Key Features"
+description: "Explore Google's core capabilities: project management, team collaboration, automation workflows, integrations, and a powerful REST API."
+---
+
+Google ships a broad set of capabilities designed to cover the full lifecycle of a team's work — from planning and execution through to reporting, automation, and external tool connectivity. The features below represent the core of what the platform offers, and each one is built to work seamlessly with the others so you spend less time switching contexts and more time shipping work.
+
+## Platform Capabilities
+
+<CardGroup cols={2}>
+  <Card title="Dashboard" icon="gauge" href="/introduction">
+    Get a real-time overview of every project, task status, and team activity across your workspace from a single, customizable command center.
+  </Card>
+  <Card title="Collaboration" icon="comments" href="/concepts/overview">
+    Comment on tasks, mention teammates, share file attachments, and keep all project communication in one place — no email threads required.
+  </Card>
+  <Card title="Automations" icon="bolt" href="/guides/automations">
+    Build no-code automation rules that trigger on task events, status changes, or due dates to eliminate repetitive manual work across your projects.
+  </Card>
+  <Card title="Integrations" icon="plug" href="/guides/integrations">
+    Connect Google to Slack, GitHub, Jira, Zapier, and dozens of other tools to sync data and trigger cross-platform actions automatically.
+  </Card>
+  <Card title="Notifications" icon="bell" href="/configuration/notifications">
+    Receive targeted, configurable alerts for the events that matter to you — via in-app inbox, email digest, or a connected messaging integration.
+  </Card>
+  <Card title="API Access" icon="code" href="/api/overview">
+    Interact with every resource in your workspace programmatically using Google's RESTful API, complete with OAuth 2.0 authentication and webhook support.
+  </Card>
+</CardGroup>
+
+## Feature Highlights
+
+### Dashboard
+
+The dashboard gives you a bird's-eye view of your workspace the moment you log in. You can pin the projects and metrics that matter most, filter activity feeds by team or date range, and track progress against milestones without opening individual projects.
+
+<Tip>
+  Pin up to ten widgets to your personal dashboard. Each widget can be scoped to a specific project, member, or label so you always see the data most relevant to your role.
+</Tip>
+
+### Collaboration
+
+Google keeps all task-related communication attached directly to the work itself. Every task supports threaded comments, file attachments (up to 250 MB per file), and `@mention` notifications. You can also use task descriptions as shared documents, with rich-text formatting and embedded links.
+
+<Accordion title="Supported attachment file types">
+  Google accepts all common file types in task attachments, including images (PNG, JPG, GIF, SVG), documents (PDF, DOCX, XLSX, CSV), archives (ZIP, TAR), and source files. Files are scanned for malware on upload and stored with AES-256 encryption at rest.
+</Accordion>
+
+### Automations
+
+Automations run server-side rules without requiring any code. Each automation consists of a **trigger** (e.g., a task moves to "In Review") and one or more **actions** (e.g., assign a reviewer, post a Slack message, set a due date). You can chain multiple actions in a single rule and add conditional filters to narrow when the rule fires.
+
+<Accordion title="Available automation triggers">
+  - Task created
+  - Task status changed
+  - Task assigned or unassigned
+  - Due date reached or passed
+  - Comment added to task
+  - Project status changed
+  - Integration event received (e.g., a GitHub PR merged)
+</Accordion>
+
+### Integrations
+
+Connect your tools from the **Workspace Settings → Integrations** panel. Each integration uses OAuth or an API key depending on the provider. Once connected, you can configure which projects and events each integration responds to without touching any configuration files.
+
+<Warning>
+  Revoking an integration's access immediately stops all automation rules that depend on it. Review your active automations before disconnecting a tool to avoid broken workflows.
+</Warning>
+
+### Notifications
+
+You control exactly which events generate alerts and how you receive them. Set global preferences in **Profile Settings → Notifications**, then override them per project for more granular control. Notification channels include the in-app inbox, email (individual or digest), and any connected messaging integration such as Slack or Microsoft Teams.
+
+### API Access
+
+Every resource available in the Google UI is also available via the REST API. Authenticate with OAuth 2.0 Bearer tokens or personal access tokens (PATs) scoped to specific permissions. The API supports pagination, filtering, and sorting on all list endpoints, and you can register webhook endpoints to receive real-time event payloads instead of polling.
+
+<Note>
+  API rate limits vary by plan. The Free plan allows 1,000 requests per hour. Pro and Enterprise plans support 10,000 and unlimited requests per hour respectively. Check the [API Reference](/api/overview) for full rate-limit headers and retry guidance.
+</Note>

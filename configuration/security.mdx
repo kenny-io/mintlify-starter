@@ -1,0 +1,175 @@
+---
+title: "Security Settings: MFA, SSO, and Audit Logs"
+sidebarTitle: "Security"
+description: "Protect your Google workspace with multi-factor authentication, single sign-on, session management, and audit log monitoring."
+---
+
+Securing your Google workspace means layering multiple controls: requiring a second factor at login, centralizing authentication through your identity provider, enforcing session timeouts, and keeping a tamper-evident record of every sensitive action. This page walks you through each control so you can configure a security posture that fits your team's needs.
+
+## Accessing Security Settings
+
+Navigate to **Settings → Security** from the left sidebar. Only workspace **Owners** and **Admins** can modify organization-level security settings. Individual members can manage their personal MFA enrollment from **Profile Settings → Security**.
+
+---
+
+## Multi-Factor Authentication (MFA)
+
+MFA requires users to present a time-based one-time password (TOTP) from an authenticator app in addition to their password. You can enforce MFA workspace-wide so every member must enroll before accessing the platform.
+
+### Enable MFA for Your Account
+
+<Steps>
+  <Step title="Open personal security settings">
+    Click your **avatar** in the top-right corner, select **Profile Settings**, then navigate to the **Security** tab.
+  </Step>
+  <Step title="Start MFA setup">
+    Click **Enable Two-Factor Authentication**. A QR code and a manual entry key are displayed.
+  </Step>
+  <Step title="Scan the QR code">
+    Open your authenticator app (Google Authenticator, Authy, 1Password, or any TOTP-compatible app) and scan the QR code. If you cannot scan, tap **Enter code manually** in your app and type the key shown on screen.
+  </Step>
+  <Step title="Verify with a one-time code">
+    Enter the 6-digit code currently displayed in your authenticator app into the **Verification Code** field and click **Verify**.
+  </Step>
+  <Step title="Save your recovery codes">
+    Google generates 10 single-use recovery codes. Download them or copy them to a secure password manager. These codes let you regain access if you lose your authenticator device.
+  </Step>
+  <Step title="Confirm enrollment">
+    Click **Finish Setup**. MFA is now active on your account. You will be prompted for a code at every new login session.
+  </Step>
+</Steps>
+
+### Enforce MFA Workspace-Wide
+
+Workspace Owners can require all members to enroll in MFA:
+
+1. Go to **Settings → Security → Multi-Factor Authentication**.
+2. Toggle **Require MFA for all members** to **On**.
+3. Set the **Enforcement grace period** (1, 3, or 7 days) — members who have not enrolled will see a prompt on login but can still access the workspace until the grace period expires.
+4. Click **Save Policy**.
+
+Members who have not enrolled receive an email prompting them to set up MFA immediately.
+
+---
+
+## Single Sign-On (SSO) with SAML 2.0
+
+SSO lets your team log in to Google using your existing identity provider (IdP) — such as Okta, Azure AD, Google Workspace, or any SAML 2.0-compliant provider — eliminating the need for separate Google passwords.
+
+<Warning>
+  An SSO misconfiguration can lock all members out of the workspace, including admins. **Always test SSO in a staging environment or with a secondary admin account** before enforcing it organization-wide. Keep at least one non-SSO admin account active until you confirm SSO is working correctly.
+</Warning>
+
+### Configure SSO
+
+<Steps>
+  <Step title="Open SSO settings">
+    Go to **Settings → Security → Single Sign-On**. Click **Configure SSO**.
+  </Step>
+  <Step title="Retrieve your Service Provider metadata">
+    Copy the **SP Entity ID** and **ACS (Assertion Consumer Service) URL** displayed on the page — you will need these when configuring your IdP.
+  </Step>
+  <Step title="Create a SAML application in your IdP">
+    In your identity provider's admin console, create a new SAML 2.0 application:
+    - Set **SP Entity ID** to the value copied in the previous step.
+    - Set **ACS URL** (also called Reply URL or Callback URL) to the ACS URL from Google.
+    - Set the **NameID format** to `emailAddress`.
+    - Map the attribute `email` to the user's primary email in your IdP.
+  </Step>
+  <Step title="Enter your IdP metadata in Google">
+    Back in Google's SSO settings, paste your IdP's **Metadata XML** into the provided field, or enter the individual values manually:
+    - **IdP Entity ID**
+    - **SSO Login URL**
+    - **X.509 Certificate**
+  </Step>
+  <Step title="Test the SSO connection">
+    Click **Test Connection**. Google opens a popup that walks through the SAML handshake. Confirm the test completes with a **Connection successful** message before proceeding.
+  </Step>
+  <Step title="Choose an enforcement mode">
+    Select one of three modes:
+    - **Optional** — Members can log in with either SSO or a Google password.
+    - **Required** — All members must use SSO. Password login is disabled.
+    - **Required (except admins)** — SSO is required for regular members; admins retain password login as a fallback.
+  </Step>
+  <Step title="Activate SSO">
+    Click **Enable SSO**. The change takes effect on the next login for each user.
+  </Step>
+</Steps>
+
+---
+
+## Session Management
+
+Control how long authenticated sessions remain valid before Google requires users to re-authenticate.
+
+Navigate to **Settings → Security → Sessions** and configure:
+
+| Setting | Description |
+|--------|-------------|
+| **Session timeout** | The period of inactivity after which a session expires. Options: 1 hour, 4 hours, 8 hours, 24 hours, 7 days. |
+| **Absolute session limit** | The maximum session duration regardless of activity. Options: 24 hours, 7 days, 30 days. |
+| **Concurrent sessions** | Limit the number of active sessions per user. Set to **1** to force single-device login. |
+
+Click **Revoke all active sessions** to immediately sign out every member workspace-wide — useful after a security incident or a credential rotation.
+
+---
+
+## Audit Logs
+
+Audit logs give you a chronological, tamper-evident record of every significant action taken in your workspace — who did what, from which IP address, and at what time.
+
+<Note>
+  Audit logs are available on **Pro and Enterprise plans** only. Upgrade your plan from **Settings → Billing & Plan** to gain access.
+</Note>
+
+### What Is Logged
+
+Google records the following event categories:
+
+<CardGroup cols={2}>
+  <Card title="Authentication" icon="lock">
+    Successful logins, failed login attempts, MFA enrollment and removal, SSO configuration changes, and session revocations.
+  </Card>
+  <Card title="Member Management" icon="users">
+    Invitations sent and accepted, role changes, member removals, and ownership transfers.
+  </Card>
+  <Card title="Project & Data Actions" icon="folder-open">
+    Project creation and deletion, task bulk operations, file uploads and deletions, and permission changes.
+  </Card>
+  <Card title="Settings Changes" icon="gear">
+    Workspace rename, slug changes, billing plan changes, security policy updates, and webhook configuration edits.
+  </Card>
+</CardGroup>
+
+### Viewing Audit Logs
+
+1. Go to **Settings → Security → Audit Logs**.
+2. Use the **date range picker** and **event category** filter to narrow results.
+3. Click any log entry to expand its full detail view, including the user's IP address, browser agent, and the exact payload of the change.
+
+### Exporting Audit Logs
+
+To export logs for compliance or archival purposes:
+
+1. Apply any filters you need, then click **Export**.
+2. Choose **CSV** or **JSON** format.
+3. For large date ranges, the export is processed asynchronously. Google emails a download link to your account address when the file is ready (typically within 5 minutes).
+
+---
+
+## IP Allowlisting
+
+IP allowlisting restricts workspace access to requests originating from a defined list of IP addresses or CIDR ranges — ideal for organizations that require office-only or VPN-only access.
+
+To configure allowlisting:
+
+1. Go to **Settings → Security → IP Allowlist**.
+2. Click **Add IP Range** and enter an IPv4 or IPv6 address, or a CIDR block (for example, `203.0.113.0/24`).
+3. Add a human-readable **label** for each entry (for example, `Office - New York`).
+4. Toggle **Enforce IP Allowlist** to **On** and click **Save**.
+
+<Warning>
+  Before enabling enforcement, make sure your own current IP address is included in the allowlist. Enabling the allowlist without adding your IP will lock you out of the workspace immediately. If you are locked out, contact Google Support with your account details to request emergency access.
+</Warning>
+
+Members attempting to log in from a non-allowlisted IP see a **403 Access Restricted** error with instructions to connect through an approved network.

@@ -1,0 +1,108 @@
+---
+title: "Manage Workspace Settings in Google"
+sidebarTitle: "Settings"
+description: "Configure your Google workspace — update your name, slug, timezone, billing plan, and general preferences from the Settings panel."
+---
+
+Every aspect of your Google workspace — from its display name and timezone to your billing plan and danger-zone controls — lives in one central Settings panel. Keeping these details accurate ensures your team sees the right information, links stay consistent, and your account reflects your actual usage needs.
+
+## Accessing Settings
+
+Open Settings by clicking the **gear icon** in the bottom-left corner of the sidebar, or by navigating to **Workspace → Settings** from the top navigation bar. The Settings panel is organized into tabs: **General**, **Billing & Plan**, and **Danger Zone**.
+
+---
+
+## General Settings
+
+The **General** tab lets you control the core identity of your workspace, including its name, URL slug, timezone, and display language.
+
+### Change Your Workspace Name
+
+<Steps>
+  <Step title="Open General Settings">
+    Navigate to **Settings → General**. The first field at the top of the page is **Workspace Name**.
+  </Step>
+  <Step title="Edit the name">
+    Click inside the **Workspace Name** field and clear the existing value. Type your new workspace name — this is the display name your team members will see across the platform.
+  </Step>
+  <Step title="Save your changes">
+    Click **Save Changes** at the bottom of the form. A confirmation toast appears in the bottom-right corner once the update is applied.
+  </Step>
+</Steps>
+
+### Workspace Slug
+
+The workspace slug is the short identifier that appears in your workspace URL (for example, `app.google.com/w/your-slug`). You can edit it from the **General** tab by updating the **Slug** field.
+
+<Warning>
+  Changing your workspace slug **immediately breaks all existing URLs** that reference the old slug — including shared links, bookmarks, and any external integrations that hard-code your workspace address. Notify your team and update any saved links before making this change.
+</Warning>
+
+### Timezone and Language
+
+- **Timezone** — Select your workspace's primary timezone from the dropdown. This affects how due dates, timestamps, and scheduled notifications are displayed across the platform.
+- **Language** — Choose your preferred display language. Changes apply immediately and affect all UI text for your account.
+
+---
+
+## Billing & Plan
+
+The **Billing & Plan** tab gives you a full picture of your current subscription and usage, and lets you upgrade or modify your plan at any time.
+
+<CardGroup cols={2}>
+  <Card title="Current Plan" icon="credit-card">
+    View your active plan tier (Free, Pro, or Enterprise), your next renewal date, and the payment method on file.
+  </Card>
+  <Card title="Usage Metrics" icon="chart-bar">
+    Monitor seats consumed, storage used, and API call volume against your plan's included limits.
+  </Card>
+  <Card title="Upgrade Plan" icon="arrow-up">
+    Click **Upgrade** to compare plan tiers side by side and select a higher tier. Changes take effect immediately and are prorated for the current billing cycle.
+  </Card>
+  <Card title="Invoices" icon="file-invoice">
+    Download past invoices as PDFs directly from the **Billing History** section at the bottom of this tab.
+  </Card>
+</CardGroup>
+
+To update your billing email or payment method, click **Manage Payment Details** — this opens the secure billing portal where you can edit card information and billing address without leaving the platform.
+
+---
+
+## Danger Zone
+
+The **Danger Zone** section, found at the bottom of the **General** tab, contains irreversible workspace-level actions.
+
+<Warning>
+  Actions in the Danger Zone **cannot be undone**. Deleting your workspace permanently removes all projects, tasks, files, and member data. Export any data you need before proceeding.
+</Warning>
+
+### Delete Your Workspace
+
+To delete your workspace:
+
+1. Scroll to the **Danger Zone** section in **Settings → General**.
+2. Click **Delete Workspace**.
+3. In the confirmation dialog, type your workspace slug exactly as shown to confirm your intent.
+4. Click **I understand, delete this workspace**.
+
+Your workspace and all associated data are scheduled for permanent deletion. You will receive a confirmation email at your account address.
+
+---
+
+## Frequently Asked Questions
+
+<Accordion title="How do I change my email address?">
+  Your email address is tied to your personal account, not the workspace. To update it, click your avatar in the top-right corner, select **Profile Settings**, then navigate to **Account → Email**. Enter your new email address and verify it via the confirmation link sent to the new address. Your login credentials update automatically once verification is complete.
+</Accordion>
+
+<Accordion title="Can I rename my workspace?">
+  Yes — you can change the display name of your workspace at any time from **Settings → General** without any side effects. Only the **slug** (the URL identifier) affects existing links. The display name is purely cosmetic and can be updated freely.
+</Accordion>
+
+<Accordion title="What happens to my data if I downgrade my plan?">
+  Downgrading your plan reduces your included limits (seats, storage, API calls). Any data already stored is not deleted immediately — you have a 30-day grace period to reduce usage below the new plan's limits. After 30 days, Google will archive resources that exceed your plan limits. You can restore them at any time by upgrading again.
+</Accordion>
+
+<Accordion title="Can I transfer workspace ownership to another member?">
+  Yes. Go to **Settings → General**, scroll to the **Ownership** section, and click **Transfer Ownership**. Select the member you want to transfer to from the dropdown and confirm. The new owner receives an email prompt to accept. You will be downgraded to an Admin role after the transfer is accepted.
+</Accordion>

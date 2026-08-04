@@ -1,0 +1,307 @@
+---
+title: "Troubleshoot Common Issues in Google"
+sidebarTitle: "Troubleshooting"
+description: "Diagnose and resolve the most common issues in Google — login problems, API errors, integration failures, and notification issues."
+---
+
+Even well-configured platforms occasionally hit a snag. This guide walks you through the most common issues Google users encounter and gives you clear, step-by-step resolutions so you can get back to work as quickly as possible. Work through the relevant section below, starting with the simplest fix before moving to more advanced steps.
+
+---
+
+## Login & Access Issues
+
+<AccordionGroup>
+  <Accordion title="I can't log in to my account">
+    If you are unable to sign in, work through the following checks in order:
+
+    <Steps>
+      <Step title="Verify your credentials">
+        Confirm you are using the email address associated with your Google account. Passwords are case-sensitive — make sure Caps Lock is off.
+      </Step>
+      <Step title="Reset your password">
+        Click **Forgot password?** on the login page. Enter your email address, and Google will send a reset link within 2 minutes. Check your spam folder if it does not arrive.
+      </Step>
+      <Step title="Clear your browser cache and cookies">
+        Stale authentication cookies can block login. Clear your browser's cache and cookies for `app.google.com`, then try again. Alternatively, open an incognito/private window.
+      </Step>
+      <Step title="Try a different browser or device">
+        Browser extensions (particularly ad blockers or security tools) can interfere with the authentication flow. Disable extensions or switch to a clean browser profile.
+      </Step>
+      <Step title="Check for an active incident">
+        Visit the [Google Status Page](https://status.google.com) to confirm there are no ongoing authentication issues.
+      </Step>
+    </Steps>
+
+    <Warning>
+      After 5 consecutive failed login attempts, Google temporarily locks the account for 15 minutes as a security measure. Wait out the lockout period before trying again to avoid extending it.
+    </Warning>
+  </Accordion>
+
+  <Accordion title="SSO is not working">
+    Single Sign-On failures are almost always caused by a configuration mismatch between your identity provider (IdP) and Google. Follow these steps to diagnose:
+
+    <Steps>
+      <Step title="Confirm SSO is enabled">
+        Go to **Settings → Security → Single Sign-On** and verify that SSO is toggled on and that the correct IdP metadata URL or XML is saved.
+      </Step>
+      <Step title="Check the Assertion Consumer Service (ACS) URL">
+        In your IdP (Okta, Azure AD, Google Workspace, etc.), confirm the ACS URL is set to `https://app.google.com/auth/saml/callback` and the Entity ID is `https://app.google.com`.
+      </Step>
+      <Step title="Verify attribute mappings">
+        Google requires the `email` attribute in the SAML assertion. Confirm your IdP is mapping the user's email to the `email` attribute. The `firstName` and `lastName` attributes are optional but recommended.
+      </Step>
+      <Step title="Inspect the SAML response">
+        Use your browser's developer tools (Network tab) or a SAML tracer extension to capture the raw SAML response. Look for error codes such as `AuthnFailed` or `InvalidNameIDPolicy`.
+      </Step>
+      <Step title="Re-upload IdP metadata">
+        If you recently rotated your IdP certificates, re-download the metadata XML and re-upload it in **Settings → Security → Single Sign-On**.
+      </Step>
+    </Steps>
+
+    <Note>
+      Only workspace **Owners** and **Admins** can modify SSO settings. If you do not have the required role, ask your workspace admin to review the configuration.
+    </Note>
+  </Accordion>
+
+  <Accordion title="I'm locked out due to MFA">
+    If you cannot access your multi-factor authentication device, use one of the following recovery options:
+
+    **Option 1 — Use a backup code**
+    When you first enabled MFA, Google provided 10 single-use backup codes. Enter one of these codes on the MFA prompt screen instead of a TOTP code. Each code can only be used once.
+
+    **Option 2 — Request admin recovery**
+    If your workspace admin has the **Manage Users** permission, they can temporarily disable MFA on your account:
+    1. Ask your admin to go to **Settings → Members**.
+    2. Locate your account and click **⋯ → Reset MFA**.
+    3. Log in without MFA, then re-enroll a new authenticator app immediately.
+
+    **Option 3 — Account recovery via Support**
+    If neither option above is available, email [support@google.com](mailto:support@google.com) from the email address registered to your account. Include your full name, workspace name, and a government-issued ID for identity verification. Recovery typically takes 1 business day.
+
+    <Tip>
+      After regaining access, generate a fresh set of backup codes and store them in a password manager. Go to **Settings → Security → Multi-Factor Authentication → Regenerate Backup Codes**.
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## API Errors
+
+<AccordionGroup>
+  <Accordion title="401 Unauthorized">
+    A `401 Unauthorized` response means Google could not verify your identity. The request either lacked credentials or the credentials provided were invalid.
+
+    **Common causes and fixes:**
+
+    - **Missing Authorization header** — Every API request must include the header `Authorization: Bearer YOUR_API_TOKEN`. Confirm your HTTP client is sending this header.
+    - **Expired or revoked token** — API tokens do not expire by default, but they can be revoked manually. Go to **Settings → API → Tokens** and confirm your token is still listed and active. If it is missing, generate a new one.
+    - **Wrong token type** — Ensure you are using a **Personal API Token** or an **OAuth 2.0 access token**, not a webhook secret or other credential type.
+    - **Incorrect environment** — If you have separate staging and production workspaces, confirm you are using the token that matches the environment you are calling.
+
+    ```bash
+    # Example: correct Authorization header
+    curl -X GET https://api.google.com/v1/projects \
+      -H "Authorization: Bearer YOUR_API_TOKEN" \
+      -H "Content-Type: application/json"
+    ```
+  </Accordion>
+
+  <Accordion title="403 Forbidden">
+    A `403 Forbidden` response means Google authenticated your request successfully but your account does not have permission to perform the requested action.
+
+    **Common causes and fixes:**
+
+    - **Insufficient role** — The action you are attempting requires a higher workspace role. For example, creating or deleting projects may require the **Admin** role. Check the [API Reference](/api/overview) for the minimum required role for each endpoint.
+    - **Scoped token missing permissions** — If you created a token with restricted scopes, it may not include the scope required for the endpoint. Go to **Settings → API → Tokens**, edit the token, and add the required scope (e.g., `projects:write`).
+    - **Resource belongs to a different workspace** — Confirm the resource ID in your request belongs to the workspace associated with your token. Cross-workspace access is not permitted.
+    - **IP allowlist** — Enterprise workspaces may enforce an IP allowlist. If your server's egress IP is not on the list, all API requests return 403. Contact your workspace admin to add your IP.
+  </Accordion>
+
+  <Accordion title="429 Rate Limit Exceeded">
+    A `429 Too Many Requests` response means your integration is sending requests faster than your plan allows.
+
+    **Immediate fix — implement exponential backoff:**
+
+    ```javascript
+    async function fetchWithRetry(url, options, maxRetries = 5) {
+      for (let attempt = 0; attempt < maxRetries; attempt++) {
+        const response = await fetch(url, options);
+        if (response.status !== 429) return response;
+
+        const retryAfter = parseInt(response.headers.get("Retry-After") || "1", 10);
+        const delay = retryAfter * 1000 * Math.pow(2, attempt);
+        await new Promise((resolve) => setTimeout(resolve, delay));
+      }
+      throw new Error("Max retries exceeded");
+    }
+    ```
+
+    **Proactive measures:**
+
+    - Read the `X-RateLimit-Remaining` header on every response. When it drops below 10, slow down your request rate.
+    - Batch operations where the API supports it (e.g., creating multiple tasks in a single request rather than one at a time).
+    - Cache read responses locally to avoid redundant GET requests.
+
+    If you consistently hit rate limits, upgrade to a plan with a higher limit or contact [support@google.com](mailto:support@google.com) to discuss an Enterprise plan with custom limits.
+  </Accordion>
+
+  <Accordion title="500 Internal Server Error">
+    A `500 Internal Server Error` indicates an unexpected failure on Google's servers — this is not caused by your request.
+
+    <Steps>
+      <Step title="Check the Status Page">
+        Visit [status.google.com](https://status.google.com) to see if there is an active incident or degraded service affecting the API.
+      </Step>
+      <Step title="Retry with backoff">
+        Most 500 errors are transient. Retry the same request after 5–10 seconds. If it succeeds, the issue was a momentary blip.
+      </Step>
+      <Step title="Isolate the request">
+        If the error persists, try simplifying your request — remove optional fields, reduce payload size, or try the equivalent action in the Google UI to confirm whether the issue is data-specific.
+      </Step>
+      <Step title="Capture the request ID">
+        Every API response includes an `X-Request-ID` header. Copy this value and include it when you contact support — it allows the engineering team to locate your request in the logs immediately.
+      </Step>
+    </Steps>
+
+    <Warning>
+      If you receive 500 errors consistently on the same endpoint for more than 15 minutes and the Status Page shows no incident, email [support@google.com](mailto:support@google.com) with the request ID, endpoint, and a sample request payload (redact any sensitive data).
+    </Warning>
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Integration Problems
+
+<AccordionGroup>
+  <Accordion title="Slack is not sending notifications">
+    If Google is no longer posting messages to your Slack channel, work through the following checks:
+
+    <Steps>
+      <Step title="Verify the integration is connected">
+        Go to **Settings → Integrations → Slack** and confirm the status shows **Connected**. If it shows **Disconnected** or **Error**, click **Reconnect** and re-authorize the Slack app.
+      </Step>
+      <Step title="Check the target channel">
+        Confirm the channel you selected in the integration settings still exists in Slack and that the Google Slack app has been invited to it. In Slack, open the channel and run `/invite @Google` if needed.
+      </Step>
+      <Step title="Review notification rules">
+        Go to **Settings → Integrations → Slack → Notification Rules** and confirm the events you expect (e.g., task created, project updated) are toggled on.
+      </Step>
+      <Step title="Test the connection">
+        Click **Send Test Message** in the Slack integration settings. If the test message arrives but real events do not, the issue is with your notification rule filters — review the project and event filters to ensure they match your activity.
+      </Step>
+      <Step title="Check Slack app permissions">
+        If your Slack workspace admin recently restricted app permissions, the Google app may have lost the `chat:write` scope. Ask your Slack admin to review the app's OAuth scopes at **Slack Admin → Manage Apps → Google**.
+      </Step>
+    </Steps>
+  </Accordion>
+
+  <Accordion title="GitHub sync is failing">
+    When Google's GitHub integration stops syncing commits, pull requests, or issue references, follow these steps:
+
+    <Steps>
+      <Step title="Confirm the GitHub integration is authorized">
+        Go to **Settings → Integrations → GitHub**. If the status is anything other than **Active**, click **Reconnect** and re-authorize via GitHub OAuth.
+      </Step>
+      <Step title="Check repository access">
+        The Google GitHub App must have access to the specific repositories you want to sync. In GitHub, go to **Settings → Applications → Google** and confirm the repositories are listed under **Repository Access**. Add any missing ones.
+      </Step>
+      <Step title="Verify webhook delivery in GitHub">
+        In your GitHub repository, go to **Settings → Webhooks** and find the Google webhook. Click it and review the **Recent Deliveries** tab. A red ✗ icon indicates a failed delivery — click the entry to see the HTTP response code and error message.
+      </Step>
+      <Step title="Re-sync manually">
+        In Google, open the project linked to the GitHub repository, click **⋯ → Sync with GitHub → Force Sync**. This re-fetches recent activity and can resolve desync caused by a missed webhook.
+      </Step>
+    </Steps>
+
+    <Note>
+      GitHub rate-limits webhook deliveries during high-traffic events (e.g., a large merge or release). If you notice gaps in sync during busy periods, a force sync will backfill the missing data.
+    </Note>
+  </Accordion>
+
+  <Accordion title="Zapier trigger is not firing">
+    If your Zapier Zap is not triggering when expected, diagnose the issue from both the Zapier and Google sides:
+
+    **In Zapier:**
+
+    1. Open your Zap and click **Test Trigger**. If Zapier cannot retrieve a sample, the connection between Zapier and Google may have lapsed — reconnect your Google account in Zapier's **Connected Accounts** settings.
+    2. Check the **Zap History** tab for recent runs. If runs appear with a status of **Filtered**, your Zap's filter conditions may be excluding the events you expect.
+    3. Confirm your Zap is turned **On** — it is easy to leave a Zap in draft mode after editing.
+
+    **In Google:**
+
+    1. Go to **Settings → Integrations → Zapier** and confirm the Zapier connection is listed as **Active**.
+    2. Navigate to **Settings → Integrations → Zapier → Event Logs** to see which events Google has dispatched. If the event you expected appears in the log but Zapier did not receive it, re-authenticate the connection from the Zapier side.
+
+    <Tip>
+      Use Zapier's built-in **Debug mode** when editing a Zap — it shows the exact payload Google sends with each trigger event, making it easy to pinpoint a mismatch between what Google is sending and what your filter expects.
+    </Tip>
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Notification Issues
+
+<AccordionGroup>
+  <Accordion title="I'm not receiving email notifications">
+    If Google's email notifications are not arriving in your inbox, work through these checks:
+
+    <Steps>
+      <Step title="Check your spam and junk folders">
+        Email from `notifications@google.com` may have been filtered. If you find it in spam, mark it as **Not Spam** to train your mail client.
+      </Step>
+      <Step title="Add the sender to your allowlist">
+        Add `notifications@google.com` and `support@google.com` to your contacts or email allowlist (whitelist). If you use a corporate email system, ask your IT team to allowlist the domain `google.com` for sending IPs published in Google's SPF record.
+      </Step>
+      <Step title="Review your notification preferences">
+        Go to **Settings → Notifications → Email** and confirm the notification categories you want are enabled. You may have previously muted a category (e.g., task assignments or mentions).
+      </Step>
+      <Step title="Confirm your email address is verified">
+        Go to **Settings → Profile** and check that your email address shows a green **Verified** badge. If not, click **Resend Verification Email** and complete the verification step.
+      </Step>
+      <Step title="Send a test notification">
+        In **Settings → Notifications**, click **Send Test Email**. If the test arrives but production notifications do not, the issue is with your notification rules — review the filters for the specific event types you are missing.
+      </Step>
+    </Steps>
+  </Accordion>
+
+  <Accordion title="My webhook is not firing">
+    If a configured webhook is not delivering payloads to your endpoint, diagnose the issue systematically:
+
+    <Steps>
+      <Step title="Check the webhook status in Google">
+        Go to **Settings → Integrations → Webhooks** and locate your webhook. The **Status** column shows whether it is **Active**, **Disabled**, or **Failed**. If it shows **Failed**, click the webhook to see the delivery log and the most recent HTTP response code your endpoint returned.
+      </Step>
+      <Step title="Verify your endpoint is reachable">
+        Confirm your server is publicly accessible from the internet. Test it with a tool like `curl`:
+        ```bash
+        curl -X POST https://your-endpoint.example.com/webhook \
+          -H "Content-Type: application/json" \
+          -d '{"test": true}'
+        ```
+        If this fails, the issue is with your server's network or firewall configuration, not Google.
+      </Step>
+      <Step title="Check for SSL/TLS errors">
+        Google requires webhook endpoints to use HTTPS with a valid TLS certificate. Self-signed certificates are not accepted. Confirm your certificate is issued by a trusted CA and has not expired.
+      </Step>
+      <Step title="Ensure your endpoint responds within 10 seconds">
+        Google marks a webhook delivery as failed if your endpoint does not respond with a `2xx` status within 10 seconds. If your processing takes longer, respond with `200 OK` immediately and handle the payload asynchronously.
+      </Step>
+      <Step title="Re-enable a disabled webhook">
+        Google automatically disables a webhook after 10 consecutive failed deliveries to protect your endpoint from overload. Once your endpoint is fixed, go to **Settings → Integrations → Webhooks**, click the webhook, and toggle it back to **Active**. Click **Retry Failed Deliveries** to replay the missed payloads.
+      </Step>
+    </Steps>
+
+    <Warning>
+      Validate the `X-Google-Signature` header on every incoming webhook payload to confirm it originated from Google. Requests that fail signature validation should return `401` rather than `200` to prevent replay attacks.
+    </Warning>
+  </Accordion>
+</AccordionGroup>
+
+---
+
+<Note>
+  If you have worked through the relevant section and your issue is still unresolved, the Google support team is ready to help. Email us at [support@google.com](mailto:support@google.com) with a description of the problem, the steps you have already tried, and any relevant error messages or request IDs. We typically respond within one business day, with priority support available on Pro and Enterprise plans.
+</Note>

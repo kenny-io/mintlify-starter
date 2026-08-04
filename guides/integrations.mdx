@@ -1,0 +1,141 @@
+---
+title: "Connect Google to Your Favorite Tools"
+sidebarTitle: "Integrations"
+description: "Integrate Google with Slack, GitHub, Zapier, and more to sync data, get notifications, and automate cross-tool workflows."
+---
+
+Google works best when it sits at the center of your existing toolchain rather than alongside it. Integrations let you push task updates into Slack channels, sync GitHub issues directly into projects, and wire up virtually any other app through Zapier — all without leaving Google to copy-paste information by hand. This guide covers how to find, enable, and configure the most popular integrations.
+
+<Note>
+  Every integration uses OAuth to authenticate with the connected service. When you enable an integration, Google requests only the minimum permissions it needs — for example, Slack integrations request `chat:write` and `channels:read`, while GitHub integrations request `repo` and `issues:write`. Review the requested scopes in the OAuth consent screen before approving, and revoke access at any time from **Settings → Integrations → Manage**.
+</Note>
+
+## Find the Integrations page
+
+Navigate to **Settings** (gear icon in the bottom-left corner) and select **Integrations** from the left-side settings menu. The Integrations catalog lists every available connection, grouped by category: **Communication**, **Developer Tools**, **Automation**, **File Storage**, and **Analytics**.
+
+## Available integrations
+
+<CardGroup cols={3}>
+  <Card title="Slack" icon="slack" href="#slack">
+    Post task updates, mentions, and project alerts directly to any Slack channel or DM.
+  </Card>
+  <Card title="GitHub" icon="github" href="#github">
+    Sync issues and pull requests with Google tasks for seamless engineering workflows.
+  </Card>
+  <Card title="Zapier" icon="bolt" href="#zapier">
+    Connect Google to 6,000+ apps using no-code Zaps for fully custom automations.
+  </Card>
+  <Card title="Google Drive" icon="google-drive" href="#">
+    Attach Drive files to tasks and sync document updates in real time.
+  </Card>
+  <Card title="Figma" icon="figma" href="#">
+    Embed live Figma frames inside task descriptions so designs stay current.
+  </Card>
+  <Card title="Jira" icon="jira" href="#">
+    Mirror Jira tickets as Google tasks and keep status fields in sync bidirectionally.
+  </Card>
+</CardGroup>
+
+## Set up integrations
+
+<Tabs>
+  <Tab title="Slack">
+    Connecting Slack lets Google post notifications to channels or direct messages whenever tasks are created, updated, assigned, or completed.
+
+    <Steps>
+      <Step title="Open the Slack integration">
+        Go to **Settings → Integrations** and click the **Slack** tile. On the Slack integration page, click **Connect Slack Workspace**.
+      </Step>
+
+      <Step title="Authorize Google in Slack">
+        You'll be redirected to Slack's OAuth page. Select the Slack workspace you want to connect from the dropdown, then click **Allow**. Google requests the `chat:write`, `channels:read`, and `users:read` scopes. After approving, you return to Google automatically.
+      </Step>
+
+      <Step title="Choose your notification channels">
+        Under **Notification Routing**, click **+ Add Rule** and configure each rule:
+
+        - **Project** — choose which Google project triggers the notification
+        - **Event** — pick one or more events: *Task Created*, *Task Completed*, *Comment Added*, *Due Date Approaching*
+        - **Channel** — type the name of the target Slack channel (e.g., `#engineering-updates`)
+
+        Add as many rules as you need. Each project can route to a different channel.
+      </Step>
+
+      <Step title="Test the connection">
+        Click **Send Test Message**. Google posts a sample notification to the selected channel. Confirm the message appears in Slack, then click **Save** to activate the integration.
+      </Step>
+    </Steps>
+
+    <Tip>
+      Use the **@google** Slack bot to create tasks without switching apps. Type `/google add [task name]` in any channel and the task lands in your designated inbox project automatically.
+    </Tip>
+  </Tab>
+
+  <Tab title="GitHub">
+    The GitHub integration creates a live sync between GitHub issues (and optionally pull requests) and Google tasks. Changes on either side propagate to the other within seconds.
+
+    <Steps>
+      <Step title="Open the GitHub integration">
+        Go to **Settings → Integrations** and click the **GitHub** tile. Click **Connect GitHub Account**.
+      </Step>
+
+      <Step title="Authorize Google in GitHub">
+        GitHub's OAuth page opens. Click **Authorize Google** to grant access. Google requests `repo`, `issues:write`, and `pull_requests:read` permissions. Select whether to authorize all repositories or only specific ones, then confirm.
+      </Step>
+
+      <Step title="Select repositories to sync">
+        Back in Google, click **+ Add Repository** and choose one or more repos from the dropdown. For each repo, configure the sync behavior:
+
+        | Setting | Options |
+        |---|---|
+        | **Sync direction** | GitHub → Google, Google → GitHub, or Both |
+        | **Issue mapping** | Map GitHub labels to Google task statuses |
+        | **Target project** | Choose which Google project receives synced issues |
+        | **Pull requests** | Toggle whether to sync PRs as linked tasks |
+      </Step>
+
+      <Step title="Map issue labels to statuses">
+        Under **Label Mapping**, define how GitHub labels translate to Google task statuses. For example, map the `in-progress` label to the **In Progress** status, and `closed` to **Done**. Unmapped labels are imported as Google tags.
+      </Step>
+
+      <Step title="Activate the sync">
+        Click **Enable Sync**. Google immediately imports open issues from the selected repositories. New issues and status changes sync in real time going forward.
+      </Step>
+    </Steps>
+
+    <Warning>
+      Enabling bidirectional sync means changes made in Google can update GitHub issues. Make sure your teammates are aware of this before activating two-way sync on shared repositories.
+    </Warning>
+  </Tab>
+
+  <Tab title="Zapier">
+    Zapier connects Google to over 6,000 apps using Zaps — automated workflows with a trigger and one or more actions. Use Zapier when no native integration exists for a tool you need.
+
+    <Steps>
+      <Step title="Grab your Google API key">
+        Go to **Settings → Integrations → Zapier** and click **Generate API Key**. Copy the key — you'll paste it into Zapier in the next step. This key is workspace-scoped, so any Zap you build can access all projects your account can see.
+      </Step>
+
+      <Step title="Create a new Zap in Zapier">
+        Log in to [zapier.com](https://zapier.com) and click **+ Create Zap**. In the trigger step, search for and select **Google** (the verified Google app in the Zapier catalog). Choose a trigger event such as *New Task*, *Task Status Changed*, or *Task Assigned*.
+      </Step>
+
+      <Step title="Authenticate Google in Zapier">
+        When prompted, click **Sign in to Google** and paste your API key from Step 1. Zapier verifies the key and lists your available projects. Select the project you want this Zap to watch.
+      </Step>
+
+      <Step title="Configure the action">
+        Click **+** to add an action step, then search for the app you want to connect — for example, **Google Sheets**, **HubSpot**, **Notion**, or **Twilio**. Configure the action fields by mapping data from the Google trigger (task name, assignee, due date, status) to fields in the destination app.
+      </Step>
+
+      <Step title="Test and publish">
+        Click **Test Step** to run the Zap with a sample record. Review the output in the action app, then click **Publish Zap** to turn it on. Your cross-tool automation runs automatically from this point forward.
+      </Step>
+    </Steps>
+
+    <Tip>
+      Browse the **Zapier Template Gallery** for pre-built Zap templates that use Google as the trigger or action — dozens of popular workflows are one-click ready.
+    </Tip>
+  </Tab>
+</Tabs>
